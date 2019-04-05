@@ -1,0 +1,28 @@
+# GENERAL SETTINGS
+
+# The locale to be used
+locale: 'de_DE.UTF-8'
+
+# STRFTIME-Format String of the delivery date.
+delivery_date_format: "%d.%m.%Y"
+
+# EMAIL CONTENT SETTINGS
+
+# Subject for the invoice mails to be sent to the customers
+invoice_mail_subject: "Your invoice"
+
+# EMAIL SERVER SETTINGS
+
+# Sender which will appear in the "FROM" field in the email
+sender: A great company accounting <accounting@agreatcompany.tld>
+
+# Emailserver to be used
+server: mail.agreatcompany.tld
+
+# Username for the account which will be used to send emails
+username: 'accounting@agreatcompany.tld'
+
+# Password for the email account stated above
+password: 'password'
+
+insecure: True

@@ -1,0 +1,6 @@
+arrow==0.12.1
+click==7.0
+Jinja2==2.10
+PyYAML==5.1
+weasyprint==46
+

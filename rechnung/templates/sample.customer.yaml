@@ -1,0 +1,12 @@
+address:
+- Martha Muster
+- "Rosa-Luxemburg-Allee 161"
+- 04161 Leipzig
+cid: '1000'
+dob: '1954-03-21'
+email: martha.muster@email.tld
+name: Martha Muster
+notify: false
+phone: '+491234567890'
+slug: martha_muster
+vid: 1000
