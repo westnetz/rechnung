@@ -26,7 +26,7 @@ def cli1():
 )
 def init(without_samples):
     """
-    Initialize in the current directory.
+    Create the directory structure in the current directory.
     """
     print("Initializing...")
 
@@ -42,7 +42,7 @@ def init(without_samples):
 @cli1.command()
 def check():
     """
-    Check the current working directory.
+    Check the directory structure in the current working directory.
     """
     error = check_dir(cwd)
     sys.exit(error)
@@ -65,11 +65,10 @@ def create(start_date, end_date, n_months, year, suffix):
 @cli1.command()
 def render():
     """
-    Render invoice documents.
+    Render all unrendered invoices.
     """
     print("Rendering invoices...")
     render_invoices(cwd)
-
 
 @cli1.command()
 @click.argument("year_suffix")

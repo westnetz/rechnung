@@ -69,46 +69,56 @@ def generate_invoice(customer, positions, start_date, end_date, n_months, year, 
 
     return (invoice_data, invoice_positions)
 
-
-def render_pdf_invoices(directory, template, config):
-
-    logo_path = os.path.join(directory, ASSETS_DIR, "logo.png")
-
-    for d in os.listdir(config.invoices_dir):
-        customer_invoice_dir = os.path.join(config.invoices_dir, d)
+def iterate_invoices(invoices_dir):
+    """
+    Generator which iterates over all customer directories and
+    included invoice yamls, yields customer_invoice_dir and filename.
+    """
+    for d in os.listdir(invoices_dir):
+        customer_invoice_dir = os.path.join(invoices_dir, d)
         if os.path.isdir(customer_invoice_dir):
             for filename in os.listdir(customer_invoice_dir):
 
                 if not filename.endswith(".yaml"):
                     continue
-                if not os.path.isfile("{}.pdf".format(filename[:-5])):
-                    with open(os.path.join(customer_invoice_dir, filename)) as yaml_file:
-                        invoice_data, invoice_positions = yaml.load(
-                            yaml_file.read(), Loader=yaml.FullLoader
-                        )
-                    invoice_data["logo_path"] = logo_path
 
-                    print("Rendering invoice pdf for {}".format(invoice_data["id"]))
+                yield customer_invoice_dir, filename
 
-                    # Format data for printing
-                    for element in ["total_netto", "total_brutto", "total_ust"]:
-                        invoice_data[element] = locale.format_string(
-                            "%.2f", invoice_data[element]
-                        )
-                    for position in invoice_positions:
-                        for key in ["price", "subtotal"]:
-                            position[key] = locale.format_string("%.2f", position[key])
 
-                    invoice_html = template.render(
-                        positions=invoice_positions, invoice=invoice_data
-                    )
+def render_pdf_invoices(directory, template, config):
 
-                    invoice_pdf_filename = os.path.join(
-                        customer_invoice_dir, "{}.pdf".format(invoice_data["id"])
-                    )
-                    generate_pdf(
-                        invoice_html, config.invoice_css_filename, invoice_pdf_filename
-                    )
+    logo_path = os.path.join(directory, ASSETS_DIR, "logo.png")
+
+    for customer_invoice_dir, filename in iterate_invoices(config.invoices_dir):
+        if not os.path.isfile("{}.pdf".format(os.path.join(customer_invoice_dir,
+            filename[:-5]))):
+            with open(os.path.join(customer_invoice_dir, filename)) as yaml_file:
+                invoice_data, invoice_positions = yaml.load(
+                    yaml_file.read(), Loader=yaml.FullLoader
+                )
+            invoice_data["logo_path"] = logo_path
+
+            print("Rendering invoice pdf for {}".format(invoice_data["id"]))
+
+            # Format data for printing
+            for element in ["total_netto", "total_brutto", "total_ust"]:
+                invoice_data[element] = locale.format_string(
+                    "%.2f", invoice_data[element]
+                )
+            for position in invoice_positions:
+                for key in ["price", "subtotal"]:
+                    position[key] = locale.format_string("%.2f", position[key])
+
+            invoice_html = template.render(
+                positions=invoice_positions, invoice=invoice_data
+            )
+
+            invoice_pdf_filename = os.path.join(
+                customer_invoice_dir, "{}.pdf".format(invoice_data["id"])
+            )
+            generate_pdf(
+                invoice_html, config.invoice_css_filename, invoice_pdf_filename
+            )
 
 
 def save_invoice_yaml(invoices_dir, invoice_data, invoice_positions):
@@ -218,7 +228,6 @@ def send_invoice_mails(config, mail_template, year_suffix):
                     config.password,
                     config.insecure,
                 )
-
 
 def create_invoices(directory, start_date, end_date, n_months, year, suffix):
     config = get_config(directory)
