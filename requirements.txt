@@ -4,7 +4,7 @@
 #
 #    make update-requirements
 #
-arrow==0.12.1
+arrow==0.13.1
 cairocffi==1.0.2          # via cairosvg, weasyprint
 cairosvg==2.3.0           # via weasyprint
 cffi==1.12.2              # via cairocffi, weasyprint
@@ -12,7 +12,7 @@ click==7.0
 cssselect2==0.2.1         # via cairosvg, weasyprint
 defusedxml==0.5.0         # via cairosvg
 html5lib==1.0.1           # via weasyprint
-jinja2==2.10
+jinja2==2.10.1
 markupsafe==1.1.1         # via jinja2
 pillow==6.0.0             # via cairosvg
 pycparser==2.19           # via cffi
@@ -21,5 +21,5 @@ python-dateutil==2.8.0    # via arrow
 pyyaml==5.1
 six==1.12.0               # via html5lib, python-dateutil
 tinycss2==1.0.2           # via cairosvg, cssselect2, weasyprint
-weasyprint==46
+weasyprint==47
 webencodings==0.5.1       # via html5lib, tinycss2
