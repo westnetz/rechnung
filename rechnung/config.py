@@ -12,12 +12,17 @@ class Config:
     customers_dir: str
     positions_dir: str
     invoices_dir: str
+    contracts_dir: str
     invoice_template_filename: str
+    contract_template_filename: str
     invoice_css_filename: str
+    contract_css_filename: str
     locale: str
     delivery_date_format: str
     invoice_mail_template_filename: str
+    contract_mail_template_filename: str
     invoice_mail_subject: str
+    contract_mail_subject: str
     sender: str
     server: str
     username: str
@@ -42,6 +47,7 @@ def get_config(directory, config_filename=settings.CONFIG_FILENAME, verify_paths
     config_data["customers_dir"] = os.path.join(directory, settings.CUSTOMERS_DIR)
     config_data["positions_dir"] = os.path.join(directory, settings.POSITIONS_DIR)
     config_data["invoices_dir"] = os.path.join(directory, settings.INVOICES_DIR)
+    config_data["contracts_dir"] = os.path.join(directory, settings.CONTRACTS_DIR)
     config_data["invoice_template_filename"] = os.path.join(
         directory, settings.INVOICE_TEMPLATE_FILENAME
     )
@@ -50,6 +56,15 @@ def get_config(directory, config_filename=settings.CONFIG_FILENAME, verify_paths
     )
     config_data["invoice_mail_template_filename"] = os.path.join(
         directory, settings.INVOICE_MAIL_TEMPLATE_FILENAME
+    )
+    config_data["contract_template_filename"] = os.path.join(
+        directory, settings.CONTRACT_TEMPLATE_FILENAME
+    )
+    config_data["contract_css_filename"] = os.path.join(
+        directory, settings.CONTRACT_CSS_FILENAME
+    )
+    config_data["contract_mail_template_filename"] = os.path.join(
+        directory, settings.CONTRACT_MAIL_TEMPLATE_FILENAME
     )
 
     if verify_paths:
