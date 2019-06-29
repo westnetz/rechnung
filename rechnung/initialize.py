@@ -7,7 +7,7 @@ from shutil import copy2
 
 base_path = os.path.dirname(os.path.abspath(__file__))
 
-DIRECTORIES = ["invoices", "customers", "positions", "templates", "assets"]
+DIRECTORIES = ["invoices", "customers", "positions", "templates", "assets", "contracts"]
 FILES = {
     "assets": ["invoice.css", "logo.png"],
     "templates": ["invoice_template.j2.html", "invoice_mail_template.j2"],
