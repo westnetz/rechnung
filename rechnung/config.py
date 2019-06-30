@@ -13,10 +13,12 @@ class Config:
     positions_dir: str
     invoices_dir: str
     contracts_dir: str
+    assets_dir: str
     invoice_template_filename: str
     contract_template_filename: str
     invoice_css_filename: str
     contract_css_filename: str
+    policy_attachment_filename: str
     locale: str
     delivery_date_format: str
     invoice_mail_template_filename: str
@@ -44,6 +46,7 @@ def get_config(directory, config_filename=settings.CONFIG_FILENAME, verify_paths
     with open(config_path) as config_file:
         config_data = yaml.load(config_file.read(), Loader=yaml.FullLoader)
 
+    config_data["assets_dir"] = os.path.join(directory, settings.ASSETS_DIR)
     config_data["customers_dir"] = os.path.join(directory, settings.CUSTOMERS_DIR)
     config_data["positions_dir"] = os.path.join(directory, settings.POSITIONS_DIR)
     config_data["invoices_dir"] = os.path.join(directory, settings.INVOICES_DIR)
@@ -65,6 +68,10 @@ def get_config(directory, config_filename=settings.CONFIG_FILENAME, verify_paths
     )
     config_data["contract_mail_template_filename"] = os.path.join(
         directory, settings.CONTRACT_MAIL_TEMPLATE_FILENAME
+    )
+
+    config_data["policy_attachment_filename"] = os.path.join(
+        directory, settings.ASSETS_DIR, config_data["policy_attachment_filename"]
     )
 
     if verify_paths:
