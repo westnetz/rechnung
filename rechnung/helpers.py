@@ -41,6 +41,32 @@ def send_email(msg, server, username, password, insecure=True):
     conn.send_message(msg)
     conn.quit()
 
+def generate_email_with_pdf_attachments(
+    mail_to, mail_from, mail_subject, mail_text, pdf_documents, attachment_filenames
+):
+    if not len(pdf_documents) == len(attachment_filenames):
+        raise ValueError("pdf_documents and attachment_filenames must be of same length.")
+
+    msg = MIMEMultipart()
+    msg["Subject"] = mail_subject
+    msg["From"] = mail_from
+    msg["To"] = mail_to
+    msg["Date"] = formatdate(localtime=True)
+    msg.attach(MIMEText(mail_text, "plain"))
+
+    for document, filename in zip(pdf_documents, attachment_filenames):
+        payload = MIMEBase("application", "pdf")
+        payload.set_payload(document)
+        payload.add_header(
+            "Content-Disposition", "attachment", filename=filename
+        )
+
+        encoders.encode_base64(payload)
+
+        msg.attach(payload)
+
+    return msg
+
 
 def generate_email_with_pdf_attachment(
     mail_to, mail_from, mail_subject, mail_text, pdf_document, attachment_filename

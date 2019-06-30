@@ -13,6 +13,7 @@ from .helpers import (
     get_pdf,
     get_template,
     generate_email_with_pdf_attachment,
+    generate_email_with_pdf_attachments,
     send_email,
 )
 
@@ -69,52 +70,53 @@ def create_yaml_contracts(contracts_dir, customers, positions):
 
 
 def send_contract_mail(config, mail_template, cid):
-    if not Path(config.contracts_dir).joinpath("{}.pdf").is_file():
+    contract_pdf_path = Path(config.contracts_dir) / f"{cid}.pdf"
+    contract_yaml_filename = Path(config.contracts_dir) / f"{cid}.yaml"
+
+    if not contract_pdf_path.is_file():
         print(f"Contract {cid} not found")
 
-#                 if not filename.endswith(".yaml"):
-#                     continue
-# 
-#                 file_suffix = ".".join(filename.split(".")[-3:-1])
-# 
-#                 if file_suffix != year_suffix:
-#                     continue
-# 
-#                 with open(os.path.join(customer_invoice_dir, filename)) as yaml_file:
-#                     invoice_data, invoice_positions = yaml.load(
-#                         yaml_file, Loader=yaml.FullLoader
-#                     )
-# 
-#                 if invoice_data["email"] is None:
-#                     continue
-# 
-#                 invoice_pdf_path = os.path.join(
-#                     customer_invoice_dir, "{}.pdf".format(filename[:-5])
-#                 )
-#                 invoice_pdf_filename = "Westnetz_Rechnung_{}.pdf".format(filename[:-5])
-#                 invoice_mail_text = mail_template.render(invoice=invoice_data)
-#                 invoice_pdf = get_pdf(invoice_pdf_path)
-# 
-#                 invoice_receiver = invoice_data["email"]
-# 
-#                 invoice_email = generate_email_with_pdf_attachment(
-#                     invoice_receiver,
-#                     config.sender,
-#                     config.invoice_mail_subject,
-#                     invoice_mail_text,
-#                     invoice_pdf,
-#                     invoice_pdf_filename,
-#                 )
-# 
-#                 print("Sending invoice {}".format(invoice_data["id"]))
-# 
-#                 send_email(
-#                     invoice_email,
-#                     config.server,
-#                     config.username,
-#                     config.password,
-#                     config.insecure,
-#                 )
+    with open(contract_yaml_filename) as yaml_file:
+        contract_data = yaml.safe_load(yaml_file)
+
+        if contract_data["email"] is None:
+            print("No email given")
+
+        contract_pdf_filename = "Dein_Westnetz_Vertrag_{}.pdf".format(cid)
+        contract_mail_text = mail_template.render()
+        contract_pdf = get_pdf(contract_pdf_path)
+
+        product_pdf_file = "{}.pdf".format(contract_data["product"]["description"])
+        product_pdf_path = Path(config.assets_dir) / product_pdf_file
+        product_pdf = get_pdf(product_pdf_path)
+
+        policy_pdf_file = config.policy_attachment_filename
+        policy_pdf_path = Path(config.assets_dir) / policy_pdf_file
+        policy_pdf = get_pdf(policy_pdf_path)
+
+        pdf_documents = [contract_pdf, product_pdf, policy_pdf]
+        pdf_filenames = [contract_pdf_filename, product_pdf_file, "Widerrufsbelehrung.pdf"]
+
+        contract_receiver = contract_data["email"]
+
+        contract_email = generate_email_with_pdf_attachments(
+            contract_receiver,
+            config.sender,
+            config.contract_mail_subject,
+            contract_mail_text,
+            pdf_documents,
+            pdf_filenames,
+        )
+
+        print("Sending contract {}".format(contract_data["cid"]))
+
+        send_email(
+            contract_email,
+            config.server,
+            config.username,
+            config.password,
+            config.insecure,
+        )
 
 def create_contracts(directory):
     config = get_config(directory)
