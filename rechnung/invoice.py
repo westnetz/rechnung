@@ -23,14 +23,15 @@ def fill_invoice_positions(positions, n_months):
     invoice_positions = []
 
     for n_e, position in enumerate(positions):
-        subtotal = round(n_months * position["price"], 2)
+        final_quantity = n_months * position["quantity"]
+        subtotal = round(final_quantity * position["price"], 2)
 
         invoice_positions.append(
             {
                 "position": n_e + 1,
                 "description": position["description"],
                 "price": position["price"],
-                "quantity": n_months,
+                "quantity": final_quantity,
                 "subtotal": subtotal,
             }
         )
