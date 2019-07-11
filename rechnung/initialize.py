@@ -45,6 +45,7 @@ def init_dir(directory, without_samples=False):
             os.path.join(directory, "customers", "1000.yaml"),
         )
 
+
 def check_dir(directory):
     """
     Check if the tool was initialized properly in the current

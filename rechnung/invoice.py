@@ -69,6 +69,7 @@ def generate_invoice(customer, positions, start_date, end_date, n_months, year, 
 
     return (invoice_data, invoice_positions)
 
+
 def iterate_invoices(invoices_dir):
     """
     Generator which iterates over all customer directories and
@@ -90,8 +91,9 @@ def render_pdf_invoices(directory, template, config):
     logo_path = os.path.join(directory, ASSETS_DIR, "logo.png")
 
     for customer_invoice_dir, filename in iterate_invoices(config.invoices_dir):
-        if not os.path.isfile("{}.pdf".format(os.path.join(customer_invoice_dir,
-            filename[:-5]))):
+        if not os.path.isfile(
+            "{}.pdf".format(os.path.join(customer_invoice_dir, filename[:-5]))
+        ):
             with open(os.path.join(customer_invoice_dir, filename)) as yaml_file:
                 invoice_data, invoice_positions = yaml.load(
                     yaml_file.read(), Loader=yaml.FullLoader
@@ -126,7 +128,9 @@ def save_invoice_yaml(invoices_dir, invoice_data, invoice_positions):
     if not os.path.isdir(invoice_customer_dir):
         os.mkdir(invoice_customer_dir)
 
-    outfilename = os.path.join(invoice_customer_dir, "{}.yaml".format(invoice_data["id"]))
+    outfilename = os.path.join(
+        invoice_customer_dir, "{}.yaml".format(invoice_data["id"])
+    )
     try:
         with open(outfilename, "x") as outfile:
             outfile.write(
@@ -228,6 +232,7 @@ def send_invoice_mails(config, mail_template, year_suffix):
                     config.password,
                     config.insecure,
                 )
+
 
 def create_invoices(directory, start_date, end_date, n_months, year, suffix):
     config = get_config(directory)
