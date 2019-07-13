@@ -25,6 +25,11 @@ as contact information. The contract is sent to the customer
 by email (using the *send contract* command  and to be signed 
 and returned. 
 
+The contract contains a *product* section. Based on the 
+description the matching product description document from 
+the assets folder is attached to the contracts email as
+well as the terms and/or returns policy.
+
 The signed contract (as jpg or pdf file) is saved into the 
 *signed\_contracts* directory. After that, the customer can 
 be imported into the system. 
