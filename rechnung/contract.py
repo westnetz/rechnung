@@ -38,11 +38,26 @@ def render_pdf_contracts(directory, template, config):
     for contract_filename in Path(config.contracts_dir).glob("*.yaml"):
         contract_pdf_filename = "{}.pdf".format(str(contract_filename).split(".")[0])
         if not Path(contract_pdf_filename).is_file():
+
             with open(contract_filename) as yaml_file:
                 contract_data = yaml.safe_load(yaml_file)
+            print("Rendering contract pdf for {}".format(contract_data["cid"]))
             contract_data["logo_path"] = logo_path
 
-            print("Rendering contract pdf for {}".format(contract_data["cid"]))
+            for element in ["price", "initial_cost"]:
+                contract_data["product"][element] = locale.format_string(
+                        "%.2f", contract_data["product"][element]
+                )
+
+            if contract_data["start"]:
+                try:
+                    contract_data["start"] = datetime.datetime.strptime(
+                        contract_data["start"],
+                        "%Y-%m-%d"
+                    ).strftime("%-d. %B %Y")
+                except ValueError:
+                    pass
+
 
             contract_html = template.render(contract=contract_data)
 
