@@ -46,18 +46,16 @@ def render_pdf_contracts(directory, template, config):
 
             for element in ["price", "initial_cost"]:
                 contract_data["product"][element] = locale.format_string(
-                        "%.2f", contract_data["product"][element]
+                    "%.2f", contract_data["product"][element]
                 )
 
             if contract_data["start"]:
                 try:
                     contract_data["start"] = datetime.datetime.strptime(
-                        contract_data["start"],
-                        "%Y-%m-%d"
+                        contract_data["start"], "%Y-%m-%d"
                     ).strftime("%-d. %B %Y")
                 except ValueError:
                     pass
-
 
             contract_html = template.render(contract=contract_data)
 
