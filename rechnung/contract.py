@@ -61,27 +61,25 @@ def render_pdf_contracts(directory, template, config):
 
             contract_html = template.render(contract=contract_data)
 
-            generate_pdf(contract_html, config.contract_css_filename, contract_pdf_filename)
+            generate_pdf(
+                contract_html, config.contract_css_filename, contract_pdf_filename
+            )
 
 
 def save_contract_yaml(contracts_dir, contract_data):
     outfilename = os.path.join(contracts_dir, "{}.yaml".format(contract_data["cid"]))
     try:
         with open(outfilename, "x") as outfile:
-            outfile.write(
-                yaml.dump(contract_data, default_flow_style=False)
-            )
+            outfile.write(yaml.dump(contract_data, default_flow_style=False))
     except FileExistsError:
         print("Contract {} already exists.".format(outfilename))
 
 
 def create_yaml_contracts(contracts_dir, customers, positions):
-     for cid in customers.keys():
-         print("Creating contract yaml for {}".format(cid))
-         contract_data = generate_contract(
-             customers[cid], positions[cid]
-         )
-         save_contract_yaml(contracts_dir, contract_data)
+    for cid in customers.keys():
+        print("Creating contract yaml for {}".format(cid))
+        contract_data = generate_contract(customers[cid], positions[cid])
+        save_contract_yaml(contracts_dir, contract_data)
 
 
 def send_contract_mail(config, mail_template, cid):
@@ -110,7 +108,11 @@ def send_contract_mail(config, mail_template, cid):
         policy_pdf = get_pdf(policy_pdf_path)
 
         pdf_documents = [contract_pdf, product_pdf, policy_pdf]
-        pdf_filenames = [contract_pdf_filename, product_pdf_file, "Widerrufsbelehrung.pdf"]
+        pdf_filenames = [
+            contract_pdf_filename,
+            product_pdf_file,
+            "Widerrufsbelehrung.pdf",
+        ]
 
         contract_receiver = contract_data["email"]
 
@@ -133,15 +135,12 @@ def send_contract_mail(config, mail_template, cid):
             config.insecure,
         )
 
+
 def create_contracts(directory):
     config = get_config(directory)
     customers = get_customers(config.customers_dir)
     positions = get_positions(config.positions_dir)
-    create_yaml_contracts(
-        config.contracts_dir,
-        customers,
-        positions,
-    )
+    create_yaml_contracts(config.contracts_dir, customers, positions)
 
 
 def render_contracts(directory):

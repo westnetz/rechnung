@@ -23,7 +23,7 @@ def cli1():
     "--without-samples",
     is_flag=True,
     help="Create working directory without sample customers",
-    default=False
+    default=False,
 )
 def init(without_samples):
     """
@@ -62,6 +62,7 @@ def create(start_date, end_date, n_months, year, suffix):
     print("Creating invoices...")
     create_invoices(cwd, start_date, end_date, n_months, year, suffix)
 
+
 @cli1.command()
 def contracts():
     """
@@ -69,6 +70,7 @@ def contracts():
     """
     print("Creating contracts...")
     create_contracts(cwd)
+
 
 @cli1.command()
 def render():
