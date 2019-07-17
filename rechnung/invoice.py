@@ -38,7 +38,7 @@ def fill_invoice_positions(positions, n_months, config):
 
         invoice_total_netto += subtotal
 
-    invoice_total_brutto = round(invoice_total_netto * (1.0 + config.vat/100.0), 2)
+    invoice_total_brutto = round(invoice_total_netto * (1.0 + config.vat / 100.0), 2)
     invoice_total_ust = round(invoice_total_brutto - invoice_total_netto, 2)
 
     return (
@@ -148,7 +148,15 @@ def save_invoice_yaml(invoices_dir, invoice_data, invoice_positions):
 
 
 def create_yaml_invoices(
-    invoices_dir, customers, positions, start_date, end_date, n_months, year, suffix, config
+    invoices_dir,
+    customers,
+    positions,
+    start_date,
+    end_date,
+    n_months,
+    year,
+    suffix,
+    config,
 ):
 
     for cid in customers.keys():
