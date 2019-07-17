@@ -1,3 +1,20 @@
+# COMPANY SETTINGS
+
+company:
+    # post address
+    address:
+    - A great company
+    - Great Street 1.
+    - 01337 Internet
+    website: https://company.tld
+    email: mail@company.tld
+    hotline:
+    # bank connection
+    bank:
+    - IBAN
+    - BLC
+    - bank name
+
 # GENERAL SETTINGS
 
 # The locale to be used
@@ -26,3 +43,5 @@ username: 'accounting@agreatcompany.tld'
 password: 'password'
 
 insecure: True
+
+#policy_attachment_filename: test.pdf

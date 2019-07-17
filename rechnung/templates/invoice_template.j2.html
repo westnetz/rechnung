@@ -1,112 +1,68 @@
+<!doctype html>
 <html>
 
-    <head>
-        <title>
-            Invoice {{ invoice.id }}
-        </title>
-    </head>
+<head>
+    <meta charset="utf-8">
+    <link href="invoice.css" media="print" rel="stylesheet">
+    <title>Invoice {{ invoice.id }}</title>
+    <meta name="description" content="Invoice demo sample">
+    <meta name="author" content="Kozea">
+</head>
 
-    <body>
-      <section class="address">
-      <p id="fromaddress">
-        <u>Your great company Ltd., A steet 21, 01234 Inacity</u>
-      </p>
-      <p id="toaddress">
-        {% for line in invoice.address %}{{ line}} <br />
-        {% endfor %}
-      </p>
-      </section>
+<body>
+    <img src="file://{{ invoice.logo_path }}" id="logo" width="200" />
+    <aside>
+        <address id="from">
+            {{ invoice.company.address | join("<br />") }}
+        </address>
 
-      <section class="infoheader">
-        <table class="infoheader">
-            <tr>
-                <th class="infoheader left">Invoice ID</th>
-                <th class="infoheader left">Date of Delivery</th>
-                <th class="infoheader right">Date of Invoice</th>
-            </tr>
-            <tr>
-                <td class="left">{{ invoice.id }}</td>
-                <td class="left">{{ invoice.period }}</td>
-                <td class="right">{{ invoice.date }}</td>
-            </tr>
-        </table>
-      </section>
+        <address id="to">
+            {{ invoice.address | join("<br />") }}
+        </address>
+    </aside>
 
-      <h1>Your invoice</h1>
+    <dl id="informations">
+        <dt>Invoice number</dt>
+        <dd>{{ invoice.id }}</dd>
+        <dt>Date</dt>
+        <dd>{{ invoice.date }}</dd>
+    </dl>
 
-      <section class="aside">
-
-          <embed src="file://{{ invoice.logo_path }}" id="logo"/>
-
-          <p class="aside">
-            your great company ltd.<br />
-            A street 21<br />
-            01234 Inacity
-          </p>
-          <p class="aside">
-            +49 (0)123 4567 890
-          </p>
-          <p class="aside">
-            info@yourcompany.tld<br />
-            http://yourcompany.tld
-          </p>
-          <p class="aside">
-            IBAN DE00 0000 0000 0000 0000 00<br />
-            BIC ACABBACA<br />
-            A Bank
-          </p>
-          <p class="aside">
-            St.-Nr: 000/000/000000<br />
-            Ust.-ID: DE00000000000
-          </p>
-          <p class="asidesmall">
-            Court: Inacity
-          </p>
-      </section>
-
-
-      <section class="main">
-        <p>
-        Dear Sir or Madam,<br /><br />
-        für die erbrachten Dienstleistungen berechnen wir wie folgt:
-        </p>
-
-        <table class="positions">
-            <tr>
-                <th id="tablepos" class="positionsheader">Pos.</th>
-                <th id="tabledesc" class="positionsheader">Description</th>
-                <th id="tablesingle" class="positionsheader">Price per item</th>
-                <th id="tableamount" class="positionsheader">Quantity</th>
-                <th id="tabletotal" class="positionsheader">Subtotal</th>
-            </tr>
+    <table>
+        <thead>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </thead>
+        <tbody>
             {% for position in positions %}
             <tr>
-                <td class="positions right">{{ position.position }}</td>
-                <td class="positions">{{ position.description }}</td>
-                <td class="positions right">{{ position.price }}</td>
-                <td class="positions right">{{ position.quantity }}</td>
-                <td class="positions right">{{ position.subtotal }}</td>
+                <td>{{ position.description }}</td>
+                <td>{{ position.price }}</td>
+                <td>{{ position.quantity }}</td>
+                <td>{{ position.subtotal }}</td>
             </tr>
             {% endfor %}
-            <tr>
-              <td colspan="4" id="sumdesc" class="right strong">Total without VAT</td>
-              <td id="totaltotal" class="right strong">{{ invoice.total_netto }}</td>
-            </tr>
-            <tr>
-              <td colspan="4" id="sumdesc" class="right strong">VAT (19%)</td>
-              <td id="totaltotal" class="right strong">{{ invoice.total_ust }}</td>
-            </tr>
-            <tr>
-              <td colspan="4" id="sumdesc" class="right strong">To pay in EUR</td>
-              <td id="totaltotal" class="right strong">{{ invoice.total_brutto }}</td>
-            </tr>
-        </table>
+        </tbody>
+    </table>
 
-        <p>
-        All prices are in EUR and to be paid within 14 days. Please add the invoice number {{
-        invoice.id }} or your customer ID {{ invoice.cid }} for reference.</p>
+    <table id="total">
+        <thead>
+            <th>Account number</th>
+            <th>Total w/o VAT</th>
+            <th>VAT (19%)</th>
+            <th>To pay in EUR</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ invoice.cid }}</td>
+                <td>{{ invoice.total_netto }}€</td>
+                <td>{{ invoice.total_ust }}€</td>
+                <td>{{ invoice.total_brutto }}€</td>
+        </tbody>
+    </table>
+    <footer>{{ invoice.company.bank | join(" | ") }}</footer>
+</body>
 
-      </section>
-
-    </body>
 </html>

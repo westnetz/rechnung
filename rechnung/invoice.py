@@ -89,7 +89,7 @@ def iterate_invoices(invoices_dir):
 
 def render_pdf_invoices(directory, template, config):
 
-    logo_path = os.path.join(directory, ASSETS_DIR, "logo.png")
+    logo_path = os.path.join(directory, ASSETS_DIR, "logo.svg")
 
     for customer_invoice_dir, filename in iterate_invoices(config.invoices_dir):
         if not os.path.isfile(
@@ -100,6 +100,7 @@ def render_pdf_invoices(directory, template, config):
                     yaml_file.read(), Loader=yaml.FullLoader
                 )
             invoice_data["logo_path"] = logo_path
+            invoice_data["company"] = config.company
 
             print("Rendering invoice pdf for {}".format(invoice_data["id"]))
 
