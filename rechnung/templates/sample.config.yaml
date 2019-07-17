@@ -17,6 +17,9 @@ company:
 
 # GENERAL SETTINGS
 
+# in percent
+vat: 19
+
 # The locale to be used
 locale: 'de_DE.UTF-8'
 

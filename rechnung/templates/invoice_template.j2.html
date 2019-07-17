@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <img src="file://{{ invoice.logo_path }}" id="logo" width="200" />
+    <img src="file://{{ invoice.logo_path }}" id="logo" width="150" />
     <aside>
         <address id="from">
             {{ invoice.company.address | join("<br />") }}
@@ -50,15 +50,19 @@
     <table id="total">
         <thead>
             <th>Account number</th>
+            {% if invoice.vat > 0 %}
             <th>Total w/o VAT</th>
-            <th>VAT (19%)</th>
-            <th>To pay in EUR</th>
+            <th>VAT ({{ invoice.vat }}%)</th>
+            {% endif %}
+            <th>Final total</th>
         </thead>
         <tbody>
             <tr>
                 <td>{{ invoice.cid }}</td>
+                {% if invoice.vat > 0 %}
                 <td>{{ invoice.total_netto }}€</td>
                 <td>{{ invoice.total_ust }}€</td>
+                {% endif %}
                 <td>{{ invoice.total_brutto }}€</td>
         </tbody>
     </table>

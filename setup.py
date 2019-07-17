@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 
+#!/usr/bin/env python3
 
 from setuptools import setup
 from os.path import dirname, abspath, join
@@ -10,11 +10,11 @@ with open(join(base_path, "requirements.txt")) as req_file:
 
 setup(
     name="rechnung",
-    description='Westnetz Rechnung',
-    author='olf42',
-    author_email='olf@subsignal.org',
-    url='https://github.com/westnetz/rechnung',
-    packages=['rechnung'],
+    description="Westnetz Rechnung",
+    author="olf42",
+    author_email="olf@subsignal.org",
+    url="https://github.com/westnetz/rechnung",
+    packages=["rechnung"],
     install_requires=requirements,
     version="0.1",
     entry_points="""
@@ -22,4 +22,3 @@ setup(
         rechnung=rechnung.cli:cli
     """,
 )
-
