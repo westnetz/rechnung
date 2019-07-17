@@ -15,7 +15,7 @@ from .helpers import (
 )
 
 
-def fill_invoice_positions(positions, n_months):
+def fill_invoice_positions(positions, n_months, config):
     invoice_total_netto = float()
     invoice_total_ust = float()
     invoice_total_brutto = float()
@@ -38,7 +38,7 @@ def fill_invoice_positions(positions, n_months):
 
         invoice_total_netto += subtotal
 
-    invoice_total_brutto = round(invoice_total_netto * 1.19)
+    invoice_total_brutto = round(invoice_total_netto * (1.0 + config.vat/100.0), 2)
     invoice_total_ust = round(invoice_total_brutto - invoice_total_netto, 2)
 
     return (
@@ -49,19 +49,24 @@ def fill_invoice_positions(positions, n_months):
     )
 
 
-def generate_invoice(customer, positions, start_date, end_date, n_months, year, suffix):
+def generate_invoice(
+    customer, positions, start_date, end_date, n_months, year, suffix, config
+):
 
-    invoice_positions, netto, ust, brutto = fill_invoice_positions(positions, n_months)
+    invoice_positions, netto, ust, brutto = fill_invoice_positions(
+        positions, n_months, config
+    )
 
     invoice_data = {}
     invoice_data["address"] = customer["address"]
-    invoice_data["period"] = "{} - {}".format(start_date, end_date)
+    invoice_data["cid"] = customer["cid"]
     invoice_data["date"] = datetime.datetime.now().strftime("%d. %B %Y")
     invoice_data["id"] = "{}.{}.{}".format(customer["cid"], year, suffix)
+    invoice_data["period"] = "{} - {}".format(start_date, end_date)
+    invoice_data["total_brutto"] = brutto
     invoice_data["total_netto"] = netto
     invoice_data["total_ust"] = ust
-    invoice_data["total_brutto"] = brutto
-    invoice_data["cid"] = customer["cid"]
+    invoice_data["vat"] = config.vat
 
     if "email" not in customer.keys():
         invoice_data["email"] = None
@@ -143,13 +148,20 @@ def save_invoice_yaml(invoices_dir, invoice_data, invoice_positions):
 
 
 def create_yaml_invoices(
-    invoices_dir, customers, positions, start_date, end_date, n_months, year, suffix
+    invoices_dir, customers, positions, start_date, end_date, n_months, year, suffix, config
 ):
 
     for cid in customers.keys():
         print("Creating invoice yaml for {}".format(cid))
         invoice_data, invoice_positions = generate_invoice(
-            customers[cid], positions[cid], start_date, end_date, n_months, year, suffix
+            customers[cid],
+            positions[cid],
+            start_date,
+            end_date,
+            n_months,
+            year,
+            suffix,
+            config,
         )
         save_invoice_yaml(invoices_dir, invoice_data, invoice_positions)
 
@@ -249,6 +261,7 @@ def create_invoices(directory, start_date, end_date, n_months, year, suffix):
         n_months,
         year,
         suffix,
+        config,
     )
 
 

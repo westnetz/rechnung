@@ -31,6 +31,7 @@ class Config:
     sender: str
     server: str
     username: str
+    vat: int
 
 
 def get_config(directory, config_filename=settings.CONFIG_FILENAME, verify_paths=True):

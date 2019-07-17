@@ -81,6 +81,7 @@ def render():
     render_contracts(cwd)
 
 
+
 @cli1.command()
 @click.argument("year_suffix")
 def send(year_suffix):
