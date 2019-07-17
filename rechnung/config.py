@@ -9,27 +9,28 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
-    customers_dir: str
-    positions_dir: str
-    invoices_dir: str
-    contracts_dir: str
     assets_dir: str
-    invoice_template_filename: str
-    contract_template_filename: str
-    invoice_css_filename: str
+    company: dict
     contract_css_filename: str
-    policy_attachment_filename: str
-    locale: str
-    delivery_date_format: str
-    invoice_mail_template_filename: str
-    contract_mail_template_filename: str
-    invoice_mail_subject: str
     contract_mail_subject: str
+    contract_mail_template_filename: str
+    contract_template_filename: str
+    contracts_dir: str
+    customers_dir: str
+    delivery_date_format: str
+    insecure: bool
+    invoice_css_filename: str
+    invoice_mail_subject: str
+    invoice_mail_template_filename: str
+    invoice_template_filename: str
+    invoices_dir: str
+    locale: str
+    password: str
+    policy_attachment_filename: str
+    positions_dir: str
     sender: str
     server: str
     username: str
-    password: str
-    insecure: bool
 
 
 def get_config(directory, config_filename=settings.CONFIG_FILENAME, verify_paths=True):

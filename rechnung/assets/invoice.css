@@ -1,151 +1,138 @@
+@charset "UTF-8";
+
 @page {
-    size: A4;
-    margin: 10mm 15mm 25mm 20mm;
+    margin: 3cm;
+
+    @bottom-left {
+        color: #1ee494;
+        font-family: Pacifico;
+    }
+
+    @bottom-center {
+        content: string(title);
+        color: #a9a;
+        font-family: Pacifico;
+        font-size: 9pt;
+    }
 }
 
-@font-face {
-    font-family: Delicious;
+footer {
+    width: 0;
+    height: 0;
+    visibility: hidden;
+    string-set: title content();
 }
 
-/*  ADDRESS PART OF THE INVOICE */
-.address {
-  margin-top: 35mm;
-  margin-bottom: 15mm;
+html {
+    color: #14213d;
+    font-family: Source Sans Pro;
+    font-size: 11pt;
+    line-height: 1.6;
 }
 
-#fromaddress {
-    font-family: Delicious;
-    font-size: 11px;
+html body {
+    margin: 0;
 }
 
-#toaddress {
-    margin-top: 10mm;
+html h1 {
+    color: #1ee494;
+    font-family: Pacifico;
+    font-size: 40pt;
+    margin: 0;
 }
 
-
-/*  INFOHEADER PART OF THE INVOICE */
-
-section.infoheader {
-  margin-bottom: 10mm;
-  margin-right: 3mm;
+html aside {
+    display: flex;
+    margin: 2em 0 4em;
 }
 
-table.infoheader {
-  margin-left: 5mm;
+html aside address {
+    font-style: normal;
+    white-space: pre-line;
 }
 
-th.infoheader {
-  font-size: 10px;
-  width: 33%
+html aside address#from {
+    color: #a9a;
+    flex: 1;
 }
 
-
-/*  ASIDE SECTION */
-
-section.aside {
-  float: right;
-  margin-left: 10mm;
-  width: 15%;
-  height: 100%;
+html aside address#to {
+    text-align: right;
 }
 
-p.aside {
-  font-size: 10px;
+html dl {
+    text-align: right;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
-p.asidesmall {
-  font-size: 9px;
+html dl dt,
+html dl dd {
+    display: inline;
+    margin: 0;
 }
 
-#logo {
-  width: 100%;
+html dl dt {
+    color: #a9a;
 }
 
-/*  MAIN SECTION */
-
-section.main {
-  margin-left: 5mm;
+html dl dt::before {
+    content: '';
+    display: block;
 }
 
-table.positions {
-  width: 78%;
+html dl dt::after {
+    content: ':';
 }
 
-td.positions {
-  border: 1px solid;
-  border-color: #000;
-  padding: 1mm;
+html table {
+    border-collapse: collapse;
+    width: 100%;
 }
 
-th.positionsheader {
-  padding: 0mm 2mm 1mm 2mm;
+html table th {
+    border-bottom: .2mm solid #a9a;
+    color: #a9a;
+    font-size: 10pt;
+    font-weight: 400;
+    padding-bottom: .25cm;
+    text-transform: uppercase;
 }
 
-#tablepos {
-  width: 8%;
+html table td {
+    padding-top: 7mm;
 }
 
-#tabledesc {
-  width: 55%;
+html table td:last-of-type {
+    color: #1ee494;
+    font-weight: bold;
+    text-align: right;
 }
 
-#tablesingle {
-  width: 15%;
+html table th,
+html table td {
+    text-align: center;
 }
 
-#tableamount {
-  width: 12%;
+html table th:first-of-type,
+html table td:first-of-type {
+    text-align: left;
 }
 
-#tabletotal {
-  width: 10%;
+html table th:last-of-type,
+html table td:last-of-type {
+    text-align: right;
 }
 
-#sumdesc    {
-  border: 0px;
-  padding: 1mm;
-}
-
-#totaltotal {
-  padding: 1mm;
-}
-
-
-/*  GENERAL STUFF */
-
-h1 {
-    font-family: Delicious;
-    font-size: 18px;
-    margin-left: 5mm;
-}
-
-table  {
-  width: 100%;
-  border-color: #000;
-  border-collapse: collapse;
-}
-
-p, th, td {
-    font-family: Delicious;
-    font-size: 14px;
-}
-
-th {
-    font-size: 11px;
-}
-
-.left {
-  text-align: left;
-}
-
-.center {
-  text-align: center;
-}
-
-.right {
-  text-align: right;
-}
-
-.strong {
-  font-weight: bold;
+html table#total {
+    background: #f6f6f6;
+    border-color: #f6f6f6;
+    border-style: solid;
+    border-width: 2cm 3cm;
+    bottom: 0;
+    font-size: 20pt;
+    margin: 0 -3cm;
+    position: absolute;
+    width: 18cm;
 }
