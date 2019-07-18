@@ -63,9 +63,9 @@ def generate_invoice(
     invoice_data["date"] = datetime.datetime.now().strftime("%d. %B %Y")
     invoice_data["id"] = "{}.{}.{}".format(customer["cid"], year, suffix)
     invoice_data["period"] = "{} - {}".format(start_date, end_date)
-    invoice_data["total_brutto"] = gross
-    invoice_data["total_netto"] = net
-    invoice_data["total_ust"] = vat
+    invoice_data["total_gross"] = gross
+    invoice_data["total_net"] = net
+    invoice_data["total_vat"] = vat
     invoice_data["vat"] = config.vat
 
     if "email" not in customer.keys():
@@ -110,7 +110,7 @@ def render_pdf_invoices(directory, template, config):
             print("Rendering invoice pdf for {}".format(invoice_data["id"]))
 
             # Format data for printing
-            for element in ["total_netto", "total_brutto", "total_ust"]:
+            for element in ["total_net", "total_gross", "total_vat"]:
                 invoice_data[element] = locale.format_string(
                     "%.2f", invoice_data[element]
                 )

@@ -62,10 +62,10 @@
             <tr>
                 <td>{{ invoice.cid }}</td>
                 {% if invoice.vat > 0 %}
-                <td>{{ invoice.total_netto }}€</td>
-                <td>{{ invoice.total_ust }}€</td>
+                <td>{{ invoice.total_net }}€</td>
+                <td>{{ invoice.total_vat }}€</td>
                 {% endif %}
-                <td>{{ invoice.total_brutto }}€</td>
+                <td>{{ invoice.total_gross }}€</td>
         </tbody>
     </table>
     <footer>{{ invoice.company.bank | join(" | ") }}</footer>
