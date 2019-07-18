@@ -68,8 +68,7 @@ def contracts():
     """
     Mass create contracts.
     """
-    print("Creating contracts...")
-    create_contracts(cwd)
+    print("Not yet implemented")
 
 
 @cli1.command()
