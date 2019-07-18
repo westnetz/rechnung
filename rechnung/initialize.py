@@ -9,8 +9,13 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 
 DIRECTORIES = ["invoices", "customers", "positions", "templates", "assets", "contracts"]
 FILES = {
-    "assets": ["invoice.css", "logo.png"],
-    "templates": ["invoice_template.j2.html", "invoice_mail_template.j2"],
+    "assets": ["invoice.css", "contract.css", "logo.png"],
+    "templates": [
+        "invoice_template.j2.html",
+        "invoice_mail_template.j2",
+        "contract_template.j2.html",
+        "contract_mail_template.j2",
+    ],
 }
 CONFIG_FILENAME = "rechnung.config.yaml"
 
