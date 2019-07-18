@@ -16,9 +16,9 @@ from .helpers import (
 
 
 def fill_invoice_positions(positions, n_months, config):
-    invoice_total_netto = float()
-    invoice_total_ust = float()
-    invoice_total_brutto = float()
+    invoice_total_net = float()
+    invoice_total_vat = float()
+    invoice_total_gross = float()
 
     invoice_positions = []
 
@@ -36,16 +36,16 @@ def fill_invoice_positions(positions, n_months, config):
             }
         )
 
-        invoice_total_netto += subtotal
+        invoice_total_gross += subtotal
 
-    invoice_total_brutto = round(invoice_total_netto * (1.0 + config.vat / 100.0), 2)
-    invoice_total_ust = round(invoice_total_brutto - invoice_total_netto, 2)
+    invoice_total_net = round(invoice_total_gross / (1.0 + config.vat / 100.0), 2)
+    invoice_total_vat = round(invoice_total_gross - invoice_total_net, 2)
 
     return (
         invoice_positions,
-        invoice_total_netto,
-        invoice_total_ust,
-        invoice_total_brutto,
+        invoice_total_net,
+        invoice_total_vat,
+        invoice_total_gross,
     )
 
 
@@ -53,7 +53,7 @@ def generate_invoice(
     customer, positions, start_date, end_date, n_months, year, suffix, config
 ):
 
-    invoice_positions, netto, ust, brutto = fill_invoice_positions(
+    invoice_positions, net, vat, gross = fill_invoice_positions(
         positions, n_months, config
     )
 
@@ -63,9 +63,9 @@ def generate_invoice(
     invoice_data["date"] = datetime.datetime.now().strftime("%d. %B %Y")
     invoice_data["id"] = "{}.{}.{}".format(customer["cid"], year, suffix)
     invoice_data["period"] = "{} - {}".format(start_date, end_date)
-    invoice_data["total_brutto"] = brutto
-    invoice_data["total_netto"] = netto
-    invoice_data["total_ust"] = ust
+    invoice_data["total_brutto"] = gross
+    invoice_data["total_netto"] = net
+    invoice_data["total_ust"] = vat
     invoice_data["vat"] = config.vat
 
     if "email" not in customer.keys():
