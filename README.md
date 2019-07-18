@@ -2,6 +2,7 @@
 
 **rechnung** is a command line based invoice generation system.
 
+![westnetz and reudnetz logos](assets/westnetz_reudnetz.png?raw=true "westnetz and reudnetz")
 
 ## Features
 
