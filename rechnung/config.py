@@ -73,7 +73,7 @@ def get_config(directory, config_filename=settings.CONFIG_FILENAME, verify_paths
     )
 
     config_data["policy_attachment_filename"] = os.path.join(
-        directory, settings.ASSETS_DIR, config_data["policy_attachment_filename"]
+        directory, settings.ASSETS_DIR, settings.POLICY_FILENAME
     )
 
     if verify_paths:

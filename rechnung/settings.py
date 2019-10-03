@@ -12,6 +12,7 @@ INVOICE_CSS_FILENAME = os.path.join(ASSETS_DIR, "invoice.css")
 INVOICE_MAIL_TEMPLATE_FILENAME = os.path.join(TEMPLATES_DIR, "invoice_mail_template.j2")
 CONTRACT_TEMPLATE_FILENAME = os.path.join(TEMPLATES_DIR, "contract_template.j2.html")
 CONTRACT_CSS_FILENAME = os.path.join(ASSETS_DIR, "contract.css")
+POLICY_FILENAME = os.path.join(ASSETS_DIR, "policy.md")
 CONTRACT_MAIL_TEMPLATE_FILENAME = os.path.join(
     TEMPLATES_DIR, "contract_mail_template.j2"
 )
