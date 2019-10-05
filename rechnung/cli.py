@@ -5,7 +5,7 @@ import sys
 from .initialize import init_dir, check_dir
 from .convert_customers import convert_customers
 from .invoice import create_invoices, render_invoices, send_invoices
-from .contract import create_contracts, render_contracts, send_contract
+from .contract import create_contracts, render_contracts, send_contract, send_reminder
 
 cwd = os.getcwd()
 
@@ -99,6 +99,15 @@ def send_contract_mail(cid):
     """
     print("Sending contract for customer {}".format(cid))
     send_contract(cwd, cid)
+
+@cli1.command()
+@click.argument("cid")
+def send_contract_reminder(cid):
+    """
+    Send contract by email.
+    """
+    print("Sending contract reminder for customer {}".format(cid))
+    send_reminder(cwd, cid)
 
 
 @cli1.command()

@@ -133,6 +133,59 @@ def send_contract_mail(config, mail_template, cid):
             config.insecure,
         )
 
+def send_contract_reminder(config, mail_template, cid):
+    contract_pdf_path = Path(config.contracts_dir) / f"{cid}.pdf"
+    contract_yaml_filename = Path(config.contracts_dir) / f"{cid}.yaml"
+
+    if not contract_pdf_path.is_file():
+        print(f"Contract {cid} not found")
+
+    with open(contract_yaml_filename) as yaml_file:
+        contract_data = yaml.safe_load(yaml_file)
+
+        if contract_data["email"] is None:
+            print("No email given")
+
+        contract_pdf_filename = "Dein_Westnetz_Vertrag_{}.pdf".format(cid)
+        contract_mail_text = mail_template.render()
+        contract_pdf = get_pdf(contract_pdf_path)
+
+        product_pdf_file = "{}.pdf".format(contract_data["product"]["description"])
+        product_pdf_path = Path(config.assets_dir) / product_pdf_file
+        product_pdf = get_pdf(product_pdf_path)
+
+        policy_pdf_file = config.policy_attachment_filename
+        policy_pdf_path = Path(config.assets_dir) / policy_pdf_file
+        policy_pdf = get_pdf(policy_pdf_path)
+
+        pdf_documents = [contract_pdf, product_pdf, policy_pdf]
+        pdf_filenames = [
+            contract_pdf_filename,
+            product_pdf_file,
+            "Widerrufsbelehrung.pdf",
+        ]
+
+        contract_receiver = contract_data["email"]
+
+        contract_email = generate_email_with_pdf_attachments(
+            contract_receiver,
+            config.sender,
+            config.contract_reminder_subject,
+            contract_mail_text,
+            pdf_documents,
+            pdf_filenames,
+        )
+
+        print("Sending contract {}".format(contract_data["cid"]))
+
+        send_email(
+            contract_email,
+            config.server,
+            config.username,
+            config.password,
+            config.insecure,
+        )
+
 
 def create_contracts(directory):
     config = get_config(directory)
@@ -151,3 +204,8 @@ def send_contract(directory, cid):
     config = get_config(directory)
     mail_template = get_template(config.contract_mail_template_filename)
     send_contract_mail(config, mail_template, cid)
+
+def send_reminder(directory, cid):
+    config = get_config(directory)
+    mail_template = get_template(config.contract_reminder_template_filename)
+    send_contract_reminder(config, mail_template, cid)

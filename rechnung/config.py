@@ -13,6 +13,8 @@ class Config:
     company: dict
     contract_css_filename: str
     contract_mail_subject: str
+    contract_reminder_subject: str
+    contract_reminder_template_filename: str
     contract_mail_template_filename: str
     contract_template_filename: str
     contracts_dir: str
@@ -71,7 +73,9 @@ def get_config(directory, config_filename=settings.CONFIG_FILENAME, verify_paths
     config_data["contract_mail_template_filename"] = os.path.join(
         directory, settings.CONTRACT_MAIL_TEMPLATE_FILENAME
     )
-
+    config_data["contract_reminder_template_filename"] = os.path.join(
+        directory, settings.CONTRACT_REMINDER_TEMPLATE_FILENAME
+    )
     config_data["policy_attachment_filename"] = os.path.join(
         directory, settings.ASSETS_DIR, config_data["policy_attachment_filename"]
     )
