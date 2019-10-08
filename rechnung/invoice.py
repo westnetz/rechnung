@@ -4,8 +4,7 @@ import os
 import os.path
 import yaml
 
-from .config import get_config
-from .settings import ASSETS_DIR
+from .settings import get_settings_from_cwd
 from .helpers import (
     generate_pdf,
     get_pdf,
@@ -15,7 +14,7 @@ from .helpers import (
 )
 
 
-def fill_invoice_positions(positions, n_months, config):
+def fill_invoice_positions(positions, n_months, settings):
     invoice_total_net = float()
     invoice_total_vat = float()
     invoice_total_gross = float()
@@ -38,7 +37,7 @@ def fill_invoice_positions(positions, n_months, config):
 
         invoice_total_gross += subtotal
 
-    invoice_total_net = round(invoice_total_gross / (1.0 + config.vat / 100.0), 2)
+    invoice_total_net = round(invoice_total_gross / (1.0 + settings.vat / 100.0), 2)
     invoice_total_vat = round(invoice_total_gross - invoice_total_net, 2)
 
     return (
@@ -50,11 +49,11 @@ def fill_invoice_positions(positions, n_months, config):
 
 
 def generate_invoice(
-    customer, positions, start_date, end_date, n_months, year, suffix, config
+    customer, positions, start_date, end_date, n_months, year, suffix, settings
 ):
 
     invoice_positions, net, vat, gross = fill_invoice_positions(
-        positions, n_months, config
+        positions, n_months, settings
     )
 
     invoice_data = {}
@@ -66,7 +65,7 @@ def generate_invoice(
     invoice_data["total_gross"] = gross
     invoice_data["total_net"] = net
     invoice_data["total_vat"] = vat
-    invoice_data["vat"] = config.vat
+    invoice_data["vat"] = settings.vat
 
     if "email" not in customer.keys():
         invoice_data["email"] = None
@@ -92,11 +91,11 @@ def iterate_invoices(invoices_dir):
                 yield customer_invoice_dir, filename
 
 
-def render_pdf_invoices(directory, template, config):
+def render_pdf_invoices(directory, template, settings):
 
-    logo_path = os.path.join(directory, ASSETS_DIR, "logo.svg")
+    logo_path = os.path.join(settings.assets_dir, "logo.svg")
 
-    for customer_invoice_dir, filename in iterate_invoices(config.invoices_dir):
+    for customer_invoice_dir, filename in iterate_invoices(settings.invoices_dir):
         if not os.path.isfile(
             "{}.pdf".format(os.path.join(customer_invoice_dir, filename[:-5]))
         ):
@@ -105,7 +104,7 @@ def render_pdf_invoices(directory, template, config):
                     yaml_file.read(), Loader=yaml.FullLoader
                 )
             invoice_data["logo_path"] = logo_path
-            invoice_data["company"] = config.company
+            invoice_data["company"] = settings.company
 
             print("Rendering invoice pdf for {}".format(invoice_data["id"]))
 
@@ -126,7 +125,7 @@ def render_pdf_invoices(directory, template, config):
                 customer_invoice_dir, "{}.pdf".format(invoice_data["id"])
             )
             generate_pdf(
-                invoice_html, config.invoice_css_filename, invoice_pdf_filename
+                invoice_html, settings.invoice_css_asset_file, invoice_pdf_filename
             )
 
 
@@ -156,7 +155,7 @@ def create_yaml_invoices(
     n_months,
     year,
     suffix,
-    config,
+    settings,
 ):
 
     for cid in customers.keys():
@@ -169,7 +168,7 @@ def create_yaml_invoices(
             n_months,
             year,
             suffix,
-            config,
+            settings,
         )
         save_invoice_yaml(invoices_dir, invoice_data, invoice_positions)
 
@@ -204,10 +203,10 @@ def get_positions(positions_dir):
     return positions
 
 
-def send_invoice_mails(config, mail_template, year_suffix):
+def send_invoice_mails(settings, mail_template, year_suffix):
 
-    for d in os.listdir(config.invoices_dir):
-        customer_invoice_dir = os.path.join(config.invoices_dir, d)
+    for d in os.listdir(settings.invoices_dir):
+        customer_invoice_dir = os.path.join(settings.invoices_dir, d)
         if os.path.isdir(customer_invoice_dir):
             for filename in os.listdir(customer_invoice_dir):
 
@@ -238,8 +237,8 @@ def send_invoice_mails(config, mail_template, year_suffix):
 
                 invoice_email = generate_email_with_pdf_attachment(
                     invoice_receiver,
-                    config.sender,
-                    config.invoice_mail_subject,
+                    settings.sender,
+                    settings.invoice_mail_subject,
                     invoice_mail_text,
                     invoice_pdf,
                     invoice_pdf_filename,
@@ -249,19 +248,19 @@ def send_invoice_mails(config, mail_template, year_suffix):
 
                 send_email(
                     invoice_email,
-                    config.server,
-                    config.username,
-                    config.password,
-                    config.insecure,
+                    settings.server,
+                    settings.username,
+                    settings.password,
+                    settings.insecure,
                 )
 
 
 def create_invoices(directory, start_date, end_date, n_months, year, suffix):
-    config = get_config(directory)
-    customers = get_customers(config.customers_dir)
-    positions = get_positions(config.positions_dir)
+    settings = get_settings_from_cwd(directory)
+    customers = get_customers(settings.customers_dir)
+    positions = get_positions(settings.positions_dir)
     create_yaml_invoices(
-        config.invoices_dir,
+        settings.invoices_dir,
         customers,
         positions,
         start_date,
@@ -269,17 +268,17 @@ def create_invoices(directory, start_date, end_date, n_months, year, suffix):
         n_months,
         year,
         suffix,
-        config,
+        settings,
     )
 
 
 def render_invoices(directory):
-    config = get_config(directory)
-    template = get_template(config.invoice_template_filename)
-    render_pdf_invoices(directory, template, config)
+    settings = get_settings_from_cwd(directory)
+    template = get_template(settings.invoice_template_file)
+    render_pdf_invoices(directory, template, settings)
 
 
 def send_invoices(directory, year_suffix):
-    config = get_config(directory)
-    mail_template = get_template(config.invoice_mail_template_filename)
-    send_invoice_mails(config, mail_template, year_suffix)
+    settings = get_settings_from_cwd(directory)
+    mail_template = get_template(settings.invoice_mail_template_file)
+    send_invoice_mails(settings, mail_template, year_suffix)
