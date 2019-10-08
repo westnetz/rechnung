@@ -5,9 +5,8 @@ import os.path
 import yaml
 
 from pathlib import Path
-from .config import get_config
 from .invoice import get_positions, get_customers
-from .settings import ASSETS_DIR
+from .settings import get_settings_from_cwd
 from .helpers import (
     generate_pdf,
     get_pdf,
@@ -32,10 +31,10 @@ def generate_contract(customer, positions):
     return contract_data
 
 
-def render_pdf_contracts(directory, template, config):
-    logo_path = Path(directory) / ASSETS_DIR / "logo.png"
+def render_pdf_contracts(directory, template, settings):
+    logo_path = settings.assets_dir / "logo.png"
 
-    for contract_filename in Path(config.contracts_dir).glob("*.yaml"):
+    for contract_filename in Path(settings.contracts_dir).glob("*.yaml"):
         contract_pdf_filename = "{}.pdf".format(str(contract_filename).split(".")[0])
         if not Path(contract_pdf_filename).is_file():
 
@@ -60,7 +59,7 @@ def render_pdf_contracts(directory, template, config):
             contract_html = template.render(contract=contract_data)
 
             generate_pdf(
-                contract_html, config.contract_css_filename, contract_pdf_filename
+                contract_html, settings.contract_css_file, contract_pdf_filename
             )
 
 
@@ -80,9 +79,9 @@ def create_yaml_contracts(contracts_dir, customers, positions):
         save_contract_yaml(contracts_dir, contract_data)
 
 
-def send_contract_mail(config, mail_template, cid):
-    contract_pdf_path = Path(config.contracts_dir) / f"{cid}.pdf"
-    contract_yaml_filename = Path(config.contracts_dir) / f"{cid}.yaml"
+def send_contract_mail(settings, mail_template, cid):
+    contract_pdf_path = Path(settings.contracts_dir) / f"{cid}.pdf"
+    contract_yaml_filename = Path(settings.contracts_dir) / f"{cid}.yaml"
 
     if not contract_pdf_path.is_file():
         print(f"Contract {cid} not found")
@@ -98,11 +97,11 @@ def send_contract_mail(config, mail_template, cid):
         contract_pdf = get_pdf(contract_pdf_path)
 
         product_pdf_file = "{}.pdf".format(contract_data["product"]["description"])
-        product_pdf_path = Path(config.assets_dir) / product_pdf_file
+        product_pdf_path = Path(settings.assets_dir) / product_pdf_file
         product_pdf = get_pdf(product_pdf_path)
 
-        policy_pdf_file = config.policy_attachment_filename
-        policy_pdf_path = Path(config.assets_dir) / policy_pdf_file
+        policy_pdf_file = settings.policy_attachment_asset_file
+        policy_pdf_path = Path(settings.assets_dir) / policy_pdf_file
         policy_pdf = get_pdf(policy_pdf_path)
 
         pdf_documents = [contract_pdf, product_pdf, policy_pdf]
@@ -116,8 +115,8 @@ def send_contract_mail(config, mail_template, cid):
 
         contract_email = generate_email_with_pdf_attachments(
             contract_receiver,
-            config.sender,
-            config.contract_mail_subject,
+            settings.sender,
+            settings.contract_mail_subject,
             contract_mail_text,
             pdf_documents,
             pdf_filenames,
@@ -127,27 +126,27 @@ def send_contract_mail(config, mail_template, cid):
 
         send_email(
             contract_email,
-            config.server,
-            config.username,
-            config.password,
-            config.insecure,
+            settings.server,
+            settings.username,
+            settings.password,
+            settings.insecure,
         )
 
 
 def create_contracts(directory):
-    config = get_config(directory)
-    customers = get_customers(config.customers_dir)
-    positions = get_positions(config.positions_dir)
-    create_yaml_contracts(config.contracts_dir, customers, positions)
+    settings = get_settings_from_cwd(directory)
+    customers = get_customers(settings.customers_dir)
+    positions = get_positions(settings.positions_dir)
+    create_yaml_contracts(settings.contracts_dir, customers, positions)
 
 
 def render_contracts(directory):
-    config = get_config(directory)
-    template = get_template(config.contract_template_filename)
-    render_pdf_contracts(directory, template, config)
+    settings = get_settings_from_cwd(directory)
+    template = get_template(settings.contract_template_file)
+    render_pdf_contracts(directory, template, settings)
 
 
 def send_contract(directory, cid):
-    config = get_config(directory)
-    mail_template = get_template(config.contract_mail_template_filename)
-    send_contract_mail(config, mail_template, cid)
+    settings = get_settings_from_cwd(directory)
+    mail_template = get_template(settings.contract_mail_template_file)
+    send_contract_mail(settings, mail_template, cid)

@@ -2,8 +2,7 @@ import click
 import os
 import sys
 
-from .initialize import init_dir, check_dir
-from .convert_customers import convert_customers
+from .settings import get_settings_from_cwd, copy_assets, create_required_settings_file
 from .invoice import create_invoices, render_invoices, send_invoices
 from .contract import create_contracts, render_contracts, send_contract
 
@@ -19,34 +18,17 @@ def cli1():
 
 
 @cli1.command()
-@click.option(
-    "--without-samples",
-    is_flag=True,
-    help="Create working directory without sample customers",
-    default=False,
-)
-def init(without_samples):
+def init():
     """
     Create the directory structure in the current directory.
     """
     print("Initializing...")
 
-    try:
-        init_dir(cwd, without_samples)
-    except Exception:
-        print("Failed. :/")
-        sys.exit(1)
+    create_required_settings_file(cwd)
+    settings = get_settings_from_cwd(cwd, create_non_existing_dirs=True)
+    copy_assets(settings.assets_dir)
 
     print("Finished.")
-
-
-@cli1.command()
-def check():
-    """
-    Check the directory structure in the current working directory.
-    """
-    error = check_dir(cwd)
-    sys.exit(error)
 
 
 @cli1.command()
@@ -99,18 +81,6 @@ def send_contract_mail(cid):
     """
     print("Sending contract for customer {}".format(cid))
     send_contract(cwd, cid)
-
-
-@cli1.command()
-@click.argument(
-    "cdir", type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True)
-)
-def import_customers(cdir):
-    """
-    Import customers and convert them to the new format.
-    """
-    print("Importing customers from {}".format(cdir))
-    convert_customers(cwd, cdir)
 
 
 cli = click.CommandCollection(sources=[cli1])
