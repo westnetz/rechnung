@@ -41,7 +41,7 @@ optional_settings = {
     "invoice_mail_template_file": "invoice_mail_template.j2",
     "invoice_template_file": "invoice_template.j2.html",
     "invoices_dir": "invoices",
-    "policy_attachment_asset_file": "policy.md",
+    "policy_attachment_asset_file": None,
     "positions_dir": "positions",
 }
 possible_settings = set(required_settings + list(optional_settings.keys()))

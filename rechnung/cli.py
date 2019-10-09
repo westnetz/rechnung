@@ -32,8 +32,8 @@ def init():
 
 
 @cli1.command()
-@click.argument("year")
-@click.argument("month")
+@click.argument("year", type=int)
+@click.argument("month", type=int)
 def create(year, month):
     """
     Mass create invoices.
@@ -90,7 +90,7 @@ def send(year, month):
 
 
 @cli1.command()
-@click.argument("cid")
+@click.argument("cid", type=int)
 def send_contract_mail(cid):
     """
     Send contract by email.

@@ -54,7 +54,7 @@ def generate_invoice(settings, contract, year, month):
     invoice_data["date"] = datetime.datetime.now().strftime(
         settings.delivery_date_format
     )
-    invoice_data["id"] = f"{contract['cid']}.{year}.{mont:02}"
+    invoice_data["id"] = f"{contract['cid']}.{year}.{month:02}"
     invoice_data["period"] = "{}-{}".format(year, month)
     invoice_data["total_gross"] = gross
     invoice_data["total_net"] = net
@@ -178,8 +178,6 @@ def send_invoices(settings, year, month):
                 )
 
                 print(f"Sending invoice {invoice_data['id']}")
-
-                print(invoice_email)
 
                 send_email(
                     invoice_email,

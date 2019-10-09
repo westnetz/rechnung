@@ -104,31 +104,41 @@ def send_contract(settings, cid):
         contract_data = yaml.safe_load(yaml_file)
 
         if contract_data["email"] is None:
-            print("No email given")
+            print("No email given for contract {cid}")
+            quit()
 
-        contract_pdf_filename = "Dein_Westnetz_Vertrag_{}.pdf".format(cid)
+        contract_pdf_filename = f"{settings.company} {contract_yaml_filename.stem}.pdf"
         contract_mail_text = mail_template.render()
         contract_pdf = get_pdf(contract_pdf_path)
 
-        product_pdf_file = "{}.pdf".format(contract_data["product"]["description"])
-        product_pdf_path = Path(settings.assets_dir) / product_pdf_file
-        product_pdf = get_pdf(product_pdf_path)
+        pdf_documents = [contract_pdf]
+        pdf_filenames = [contract_pdf_filename]
 
-        policy_pdf_file = settings.policy_attachment_asset_file
-        policy_pdf_path = Path(settings.assets_dir) / policy_pdf_file
-        policy_pdf = get_pdf(policy_pdf_path)
+        for item in contract_data["items"]:
+            item_pdf_file = f"{item['description']}.pdf"
+            if not item_pdf_file in pdf_filenames:
+                item_pdf_path = Path(settings.assets_dir / item_pdf_file)
+                if item_pdf_path.is_file():
+                    item_pdf = get_pdf(item_pdf_path)
+                    pdf_documents.append(item_pdf)
+                    pdf_filenames.append(item_pdf_file)
+                else:
+                    print(f"Item file {item_pdf_file} not found")
 
-        pdf_documents = [contract_pdf, product_pdf, policy_pdf]
-        pdf_filenames = [
-            contract_pdf_filename,
-            product_pdf_file,
-            "Widerrufsbelehrung.pdf",
-        ]
-
-        contract_receiver = contract_data["email"]
+        if settings.policy_attachment_asset_file:
+            policy_pdf_file = settings.policy_attachment_asset_file
+            policy_pdf_path = Path(settings.assets_dir / policy_pdf_file)
+            if policy_pdf_path.is_file():
+                policy_pdf = get_pdf(policy_pdf_path)
+                pdf_documents.append(policy_pdf)
+                pdf_filenames.append(policy_pdf_file)
+            else:
+                print(
+                    f"Policy file {settings.policy_attachment_asset_file.name} not found"
+                )
 
         contract_email = generate_email_with_pdf_attachments(
-            contract_receiver,
+            contract_data["email"],
             settings.sender,
             settings.contract_mail_subject,
             contract_mail_text,
