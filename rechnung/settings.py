@@ -30,7 +30,7 @@ required_settings = [
     "username",
     "password",
     "insecure",
-    "policy_attachment_asset_file",
+    "attach_policy"
 ]
 optional_settings = {
     "contracts_dir": "contracts",
@@ -44,6 +44,7 @@ optional_settings = {
     "invoice_mail_template_file": "invoice_mail_template.j2",
     "invoice_css_asset_file": "invoice.css",
     "invoice_template_file": "invoice_template.j2.html",
+    "policy_attachment_asset_file": "policy.pdf"
 }
 possible_settings = set(required_settings + list(optional_settings.keys()))
 
