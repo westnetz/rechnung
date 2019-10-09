@@ -65,16 +65,15 @@ def generate_invoice(settings, contract, year, month):
     return invoice_data
 
 
-def iterate_invoices(invoices_dir):
+def iterate_invoices(settings):
     """
     Generator which iterates over all contract directories and
     included invoice yamls, yields contract_invoice_dir and filename.
     """
-    for d in os.listdir(invoices_dir):
-        contract_invoice_dir = os.path.join(invoices_dir, d)
-        if os.path.isdir(contract_invoice_dir):
-            for filename in os.listdir(contract_invoice_dir):
-
+    for d in settings.invoices_dir.iterdir():
+        contract_invoice_dir = settings.invoices_dir / d
+        if contract_invoice_dir.is_dir():
+            for filename in contract_invoice_dir.iterdir():
                 if not filename.endswith(".yaml"):
                     continue
 
@@ -83,11 +82,11 @@ def iterate_invoices(invoices_dir):
 
 def render_invoices(settings):
     template = get_template(settings.invoice_template_file)
-    logo_path = Path(settings.assets_dir / "logo.svg")
+    logo_path = settings.assets_dir / settings.logo_file
 
-    for contract_invoice_dir, filename in iterate_invoices(settings.invoices_dir):
+    for contract_invoice_dir, filename in iterate_invoices(settings):
         if not os.path.isfile(
-            "{}.pdf".format(os.path.join(contract_invoice_dir, filename[:-5]))
+            os.path.join(contract_invoice_dir, filename[:-5]) + ".pdf"
         ):
             with open(os.path.join(contract_invoice_dir, filename)) as yaml_file:
                 invoice_data = yaml.safe_load(yaml_file.read())
@@ -107,8 +106,8 @@ def render_invoices(settings):
 
             invoice_html = template.render(invoice=invoice_data)
 
-            invoice_pdf_filename = os.path.join(
-                contract_invoice_dir, "{}.pdf".format(invoice_data["id"])
+            invoice_pdf_filename = (
+                settings.contract_invoice_dir / f"{invoice_data['id']}.pdf"
             )
             generate_pdf(
                 invoice_html, settings.invoice_css_asset_file, invoice_pdf_filename
@@ -116,9 +115,9 @@ def render_invoices(settings):
 
 
 def save_invoice_yaml(settings, invoice_data):
-    invoice_contract_dir = Path(settings.invoices_dir / invoice_data["cid"])
+    invoice_contract_dir = settings.invoices_dir / invoice_data["cid"]
 
-    if not os.path.isdir(invoice_contract_dir):
+    if not invoice_contract_dir.iterdir():
         os.mkdir(invoice_contract_dir)
 
     outfilename = invoice_contract_dir / f"{invoice_data['id']}.yaml"
@@ -144,10 +143,10 @@ def create_yaml_invoices(settings, contracts, year, month):
 def send_invoices(settings, year, month):
     mail_template = get_template(settings.invoice_mail_template_file)
 
-    for d in os.listdir(settings.invoices_dir):
-        customer_invoice_dir = os.path.join(settings.invoices_dir, d)
-        if os.path.isdir(customer_invoice_dir):
-            for filename in os.listdir(customer_invoice_dir):
+    for d in settings.invoices_dir.iterdir():
+        customer_invoice_dir = settings.invoices_dir / d
+        if customer_invoice_dir.iterdir():
+            for filename in customer_invoice_dir.iterdir():
                 if not filename.endswith(".yaml"):
                     continue
 

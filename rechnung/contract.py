@@ -17,7 +17,7 @@ from .helpers import (
 
 def get_contracts(settings):
     contracts = {}
-    for filename in os.listdir(settings.contracts_dir):
+    for filename in settings.contracts_dir.glob("*.yaml"):
 
         if not filename.endswith(".yaml"):
             continue
@@ -29,8 +29,7 @@ def get_contracts(settings):
     return contracts
 
 
-def generate_contract(customer, positions):
-
+def create_contract(customer, positions):
     contract_data = customer
     contract_data["product"] = positions[0]
     contract_data["product"]["price"] = round(positions[0]["price"] * 1.19, 2)
@@ -88,7 +87,7 @@ def save_contract_yaml(contracts_dir, contract_data):
 def create_yaml_contracts(contracts_dir, customers, positions):
     for cid in customers.keys():
         print("Creating contract yaml for {}".format(cid))
-        contract_data = generate_contract(customers[cid], positions[cid])
+        contract_data = create_contract(customers[cid], positions[cid])
         save_contract_yaml(contracts_dir, contract_data)
 
 
@@ -127,7 +126,7 @@ def send_contract(settings, cid):
 
         if settings.policy_attachment_asset_file:
             policy_pdf_file = settings.policy_attachment_asset_file
-            policy_pdf_path = Path(settings.assets_dir / policy_pdf_file)
+            policy_pdf_path = settings.assets_dir / policy_pdf_file
             if policy_pdf_path.is_file():
                 policy_pdf = get_pdf(policy_pdf_path)
                 pdf_documents.append(policy_pdf)

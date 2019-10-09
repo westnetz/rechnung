@@ -69,7 +69,7 @@ def print_stats():
 @cli1.command()
 def render():
     """
-    Render all unrendered invoices.
+    Render all unrendered invoices and contracs
     """
     print("Rendering invoices and contracts...")
     settings = get_settings_from_cwd(cwd)

@@ -41,6 +41,7 @@ optional_settings = {
     "invoice_mail_template_file": "invoice_mail_template.j2",
     "invoice_template_file": "invoice_template.j2.html",
     "invoices_dir": "invoices",
+    "logo_file": "logo.svg",
     "policy_attachment_asset_file": None,
     "positions_dir": "positions",
 }
@@ -66,7 +67,7 @@ def create_required_settings_file(cwd, settings_file=SETTINGS_FILE):
     if settings_path.exists():
         raise FileExistsError("Settings file already exists.")
     with open(settings_path, "w") as s_file:
-        yaml.dump(dict.fromkeys(possible_settings), s_file)
+        yaml.dump(dict.fromkeys(required_settings), s_file)
     return settings_path
 
 
