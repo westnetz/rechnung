@@ -5,16 +5,16 @@
 #    make update-requirements
 #
 arrow==0.13.1
-cairocffi==1.0.2          # via cairosvg, weasyprint
-cairosvg==2.4.0           # via weasyprint
+cairocffi==1.1.0          # via cairosvg, weasyprint
+cairosvg==2.4.2           # via weasyprint
 cffi==1.12.3              # via cairocffi, weasyprint
 click==7.0
-cssselect2==0.2.1         # via cairosvg, weasyprint
+cssselect2==0.2.2         # via cairosvg, weasyprint
 defusedxml==0.6.0         # via cairosvg
 html5lib==1.0.1           # via weasyprint
 jinja2==2.10.1
 markupsafe==1.1.1         # via jinja2
-pillow==6.0.0             # via cairosvg
+pillow==6.2.0             # via cairosvg
 pycparser==2.19           # via cffi
 pyphen==0.9.5             # via weasyprint
 python-dateutil==2.8.0    # via arrow
@@ -25,4 +25,4 @@ weasyprint==47
 webencodings==0.5.1       # via html5lib, tinycss2
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.0.1        # via cairocffi, tinycss2, weasyprint
+# setuptools==41.4.0        # via cairocffi, tinycss2, weasyprint
