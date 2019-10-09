@@ -20,30 +20,29 @@ od = pd / ORIG_DIR
 # in the settings.yaml
 required_settings = [
     "company",
-    "vat",
-    "locale",
-    "delivery_date_format",
-    "invoice_mail_subject",
     "contract_mail_subject",
+    "insecure",
+    "invoice_mail_subject",
+    "locale",
+    "password",
     "sender",
     "server",
     "username",
-    "password",
-    "insecure",
-    "policy_attachment_asset_file",
+    "vat",
 ]
 optional_settings = {
-    "contracts_dir": "contracts",
-    "customers_dir": "customers",
-    "positions_dir": "positions",
-    "invoices_dir": "invoices",
     "assets_dir": "assets",
-    "contract_mail_template_file": "contract_mail_template.j2",
     "contract_css_asset_file": "contract.css",
+    "contract_mail_template_file": "contract_mail_template.j2",
     "contract_template_file": "contract_template.j2.html",
-    "invoice_mail_template_file": "invoice_mail_template.j2",
+    "contracts_dir": "contracts",
+    "delivery_date_format": "%d. %B %Y",
     "invoice_css_asset_file": "invoice.css",
+    "invoice_mail_template_file": "invoice_mail_template.j2",
     "invoice_template_file": "invoice_template.j2.html",
+    "invoices_dir": "invoices",
+    "policy_attachment_asset_file": "policy.md",
+    "positions_dir": "positions",
 }
 possible_settings = set(required_settings + list(optional_settings.keys()))
 
@@ -60,14 +59,14 @@ class RequiredSettingMissingError(Exception):
 
 def create_required_settings_file(cwd, settings_file=SETTINGS_FILE):
     """
-    Creates a settings file with all required settings listed, to 
+    Creates a settings file with all required settings listed, to
     be filled by the user accordingly.
     """
     settings_path = Path(cwd) / settings_file
     if settings_path.exists():
         raise FileExistsError("Settings file already exists.")
     with open(settings_path, "w") as s_file:
-        yaml.dump(dict.fromkeys(required_settings), s_file)
+        yaml.dump(dict.fromkeys(possible_settings), s_file)
     return settings_path
 
 

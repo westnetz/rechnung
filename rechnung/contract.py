@@ -5,8 +5,6 @@ import os.path
 import yaml
 
 from pathlib import Path
-from .invoice import get_positions, get_customers
-from .settings import get_settings_from_cwd
 from .helpers import (
     generate_pdf,
     get_pdf,
@@ -15,6 +13,20 @@ from .helpers import (
     generate_email_with_pdf_attachments,
     send_email,
 )
+
+
+def get_contracts(settings):
+    contracts = {}
+    for filename in os.listdir(settings.contracts_dir):
+
+        if not filename.endswith(".yaml"):
+            continue
+
+        with open(Path(settings.contracts_dir / filename), "r") as contract_file:
+            contract = yaml.safe_load(contract_file)
+
+        contracts[contract["cid"]] = contract
+    return contracts
 
 
 def generate_contract(customer, positions):
@@ -31,7 +43,8 @@ def generate_contract(customer, positions):
     return contract_data
 
 
-def render_pdf_contracts(directory, template, settings):
+def render_contracts(settings):
+    template = get_template(settings.contract_template_file)
     logo_path = settings.assets_dir / "logo.png"
 
     for contract_filename in Path(settings.contracts_dir).glob("*.yaml"):
@@ -43,23 +56,23 @@ def render_pdf_contracts(directory, template, settings):
             print("Rendering contract pdf for {}".format(contract_data["cid"]))
             contract_data["logo_path"] = logo_path
 
-            for element in ["price", "initial_cost"]:
-                contract_data["product"][element] = locale.format_string(
-                    "%.2f", contract_data["product"][element]
-                )
+            for item in contract_data["items"]:
+                for element in ["price", "initial_cost"]:
+                    item[element] = locale.format_string("%.2f", item.get(element, 0))
 
             if contract_data["start"]:
                 try:
-                    contract_data["start"] = datetime.datetime.strptime(
-                        contract_data["start"], "%Y-%m-%d"
-                    ).strftime("%-d. %B %Y")
+                    contract_data["start"] = contract_data["start"].strftime(
+                        "%-d. %B %Y"
+                    )
                 except ValueError:
                     pass
 
+            print(contract_data)
             contract_html = template.render(contract=contract_data)
 
             generate_pdf(
-                contract_html, settings.contract_css_file, contract_pdf_filename
+                contract_html, settings.contract_css_asset_file, contract_pdf_filename
             )
 
 
@@ -133,20 +146,11 @@ def send_contract_mail(settings, mail_template, cid):
         )
 
 
-def create_contracts(directory):
-    settings = get_settings_from_cwd(directory)
-    customers = get_customers(settings.customers_dir)
+def create_contracts(settings):
     positions = get_positions(settings.positions_dir)
-    create_yaml_contracts(settings.contracts_dir, customers, positions)
+    create_yaml_contracts(settings.contracts_dir)
 
 
-def render_contracts(directory):
-    settings = get_settings_from_cwd(directory)
-    template = get_template(settings.contract_template_file)
-    render_pdf_contracts(directory, template, settings)
-
-
-def send_contract(directory, cid):
-    settings = get_settings_from_cwd(directory)
+def send_contract(settings, cid):
     mail_template = get_template(settings.contract_mail_template_file)
     send_contract_mail(settings, mail_template, cid)
