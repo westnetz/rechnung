@@ -67,14 +67,6 @@ def print_stats():
 
 
 @cli1.command()
-def contracts():
-    """
-    Mass create contracts.
-    """
-    print("Not yet implemented")
-
-
-@cli1.command()
 def render():
     """
     Render all unrendered invoices.
@@ -86,13 +78,13 @@ def render():
 
 
 @cli1.command()
-@click.argument("year")
-@click.argument("month")
+@click.argument("year", type=int)
+@click.argument("month", type=int)
 def send(year, month):
     """
     Send invoices by email.
     """
-    print("Sending invoices *.{}".format(year_suffix))
+    print(f"Sending invoices for {year}.{month:02}")
     settings = get_settings_from_cwd(cwd)
     send_invoices(settings, year, month)
 
@@ -103,7 +95,7 @@ def send_contract_mail(cid):
     """
     Send contract by email.
     """
-    print("Sending contract {}".format(cid))
+    print(f"Sending contract {cid}")
     settings = get_settings_from_cwd(cwd)
     send_contract(settings, cid)
 

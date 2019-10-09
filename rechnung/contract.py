@@ -92,7 +92,8 @@ def create_yaml_contracts(contracts_dir, customers, positions):
         save_contract_yaml(contracts_dir, contract_data)
 
 
-def send_contract_mail(settings, mail_template, cid):
+def send_contract(settings, cid):
+    mail_template = get_template(settings.contract_mail_template_file)
     contract_pdf_path = Path(settings.contracts_dir) / f"{cid}.pdf"
     contract_yaml_filename = Path(settings.contracts_dir) / f"{cid}.yaml"
 
@@ -149,8 +150,3 @@ def send_contract_mail(settings, mail_template, cid):
 def create_contracts(settings):
     positions = get_positions(settings.positions_dir)
     create_yaml_contracts(settings.contracts_dir)
-
-
-def send_contract(settings, cid):
-    mail_template = get_template(settings.contract_mail_template_file)
-    send_contract_mail(settings, mail_template, cid)

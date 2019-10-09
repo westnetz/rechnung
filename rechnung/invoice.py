@@ -54,7 +54,7 @@ def generate_invoice(settings, contract, year, month):
     invoice_data["date"] = datetime.datetime.now().strftime(
         settings.delivery_date_format
     )
-    invoice_data["id"] = "{}.{}.{}".format(contract["cid"], year, month)
+    invoice_data["id"] = f"{contract['cid']}.{year}.{mont:02}"
     invoice_data["period"] = "{}-{}".format(year, month)
     invoice_data["total_gross"] = gross
     invoice_data["total_net"] = net
@@ -80,6 +80,7 @@ def iterate_invoices(invoices_dir):
 
                 yield contract_invoice_dir, filename
 
+
 def render_invoices(settings):
     template = get_template(settings.invoice_template_file)
     logo_path = Path(settings.assets_dir / "logo.svg")
@@ -104,9 +105,7 @@ def render_invoices(settings):
                 for key in ["price", "subtotal"]:
                     item[key] = locale.format_string("%.2f", item[key])
 
-            invoice_html = template.render(
-                invoice=invoice_data
-            )
+            invoice_html = template.render(invoice=invoice_data)
 
             invoice_pdf_filename = os.path.join(
                 contract_invoice_dir, "{}.pdf".format(invoice_data["id"])
@@ -142,7 +141,50 @@ def create_yaml_invoices(settings, contracts, year, month):
         save_invoice_yaml(settings, invoice_data)
 
 
-
 def send_invoices(settings, year, month):
     mail_template = get_template(settings.invoice_mail_template_file)
-    send_invoice_mails(settings, mail_template, year, month)
+
+    for d in os.listdir(settings.invoices_dir):
+        customer_invoice_dir = os.path.join(settings.invoices_dir, d)
+        if os.path.isdir(customer_invoice_dir):
+            for filename in os.listdir(customer_invoice_dir):
+                if not filename.endswith(".yaml"):
+                    continue
+
+                file_suffix = ".".join(filename.split(".")[-3:-1])
+
+                if file_suffix != f"{year}.{month:02}":
+                    continue
+
+                with open(os.path.join(customer_invoice_dir, filename)) as yaml_file:
+                    invoice_data = yaml.safe_load(yaml_file)
+
+                invoice_pdf_path = os.path.join(
+                    customer_invoice_dir, f"{filename[:-5]}.pdf"
+                )
+                invoice_pdf_filename = f"{settings.company} {filename[:-5]}.pdf"
+                invoice_mail_text = mail_template.render(invoice=invoice_data)
+                invoice_pdf = get_pdf(invoice_pdf_path)
+
+                invoice_receiver = invoice_data["email"]
+
+                invoice_email = generate_email_with_pdf_attachment(
+                    invoice_receiver,
+                    settings.sender,
+                    settings.invoice_mail_subject,
+                    invoice_mail_text,
+                    invoice_pdf,
+                    invoice_pdf_filename,
+                )
+
+                print(f"Sending invoice {invoice_data['id']}")
+
+                print(invoice_email)
+
+                send_email(
+                    invoice_email,
+                    settings.server,
+                    settings.username,
+                    settings.password,
+                    settings.insecure,
+                )
