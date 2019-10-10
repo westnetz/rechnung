@@ -12,7 +12,7 @@ click==7.0
 cssselect2==0.2.2         # via cairosvg, weasyprint
 defusedxml==0.6.0         # via cairosvg
 html5lib==1.0.1           # via weasyprint
-jinja2==2.10.1
+jinja2==2.10.3
 markupsafe==1.1.1         # via jinja2
 pillow==6.2.0             # via cairosvg
 pycparser==2.19           # via cffi
