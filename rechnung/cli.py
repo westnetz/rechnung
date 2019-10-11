@@ -21,7 +21,7 @@ def init():
     """
     Create the directory structure in the current directory.
     """
-    print("Initializing...")
+    print(f"Initializing in {cwd}...")
 
     create_required_settings_file(cwd)
     settings = get_settings_from_cwd(cwd, create_non_existing_dirs=True)
