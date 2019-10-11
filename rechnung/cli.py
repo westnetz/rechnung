@@ -48,10 +48,11 @@ def print_contracts():
     """
     Print an overview of all contracs
     """
-    for cid, contract in get_contracts(cwd).items():
-        if not "slug" in contract:
-            contract["slug"] = contract["email"]
-        print("{cid}: {slug} {opening} {monthly}€".format(**contract))
+    settings = get_settings_from_cwd(cwd)
+    for cid, data in get_contracts(settings).items():
+        slug = data.get("email", "unknown")
+        total_monthly = sum(map(lambda i: i["price"], data["items"]))
+        print(f"{cid}: {slug} {data['start']} {total_monthly}€")
 
 
 @cli1.command()
@@ -59,11 +60,14 @@ def print_stats():
     """
     Print stats about the contracts
     """
-    contracts = get_contracts(cwd).values()
+    settings = get_settings_from_cwd(cwd)
+    contracts = get_contracts(settings).values()
     print(f"{len(contracts)} contracts in total")
 
-    total_monthly = sum(map(lambda c: int(c["monthly"]), contracts))
-    print(f"{total_monthly}€ per month")
+    total_monthly = sum(
+        map(lambda x: x[0]["price"], list(map(lambda i: i["items"], contracts)))
+    )
+    print(f"{total_monthly:.2f}€ per month")
 
 
 @cli1.command()

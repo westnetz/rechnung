@@ -3,6 +3,7 @@ import locale
 import os
 import os.path
 import yaml
+from collections import OrderedDict
 
 from pathlib import Path
 from .helpers import (
@@ -15,29 +16,30 @@ from .helpers import (
 )
 
 
-def get_contracts(settings):
-    contracts = {}
+def get_contracts(settings, year=None, month=None, inactive=False):
+    contracts = OrderedDict()
     for filename in settings.contracts_dir.glob("*.yaml"):
-
-        if not filename.endswith(".yaml"):
-            continue
-
         with open(Path(settings.contracts_dir / filename), "r") as contract_file:
             contract = yaml.safe_load(contract_file)
 
-        contracts[contract["cid"]] = contract
-    return contracts
+        if year and month:
+            if contract["start"] < datetime.date(year, month, 1):
+                contracts[contract["cid"]] = contract
+            else:
+                print(f"Ignoring {contract['cid']} with start {contract['start']}")
+        else:
+            contracts[contract["cid"]] = contract
+
+    return {k: contracts[k] for k in sorted(contracts)}
 
 
 def create_contract(customer, positions):
     contract_data = customer
     contract_data["product"] = positions[0]
-    contract_data["product"]["price"] = round(positions[0]["price"] * 1.19, 2)
-
-    if "email" not in customer.keys():
-        contract_data["email"] = None
-    else:
-        contract_data["email"] = customer["email"]
+    contract_data["product"]["price"] = round(
+        positions[0]["price"] * 1.0 + settings.vat, 2
+    )
+    contract_data["email"] = customer["email"]
 
     return contract_data
 
@@ -75,8 +77,8 @@ def render_contracts(settings):
             )
 
 
-def save_contract_yaml(contracts_dir, contract_data):
-    outfilename = os.path.join(contracts_dir, "{}.yaml".format(contract_data["cid"]))
+def save_contract_yaml(settings, contract_data):
+    outfilename = settings.contracts_dir / contract_data["cid"] + ".yaml"
     try:
         with open(outfilename, "x") as outfile:
             outfile.write(yaml.dump(contract_data, default_flow_style=False))
@@ -84,11 +86,11 @@ def save_contract_yaml(contracts_dir, contract_data):
         print("Contract {} already exists.".format(outfilename))
 
 
-def create_yaml_contracts(contracts_dir, customers, positions):
+def create_yaml_contracts(settings, customers, positions):
     for cid in customers.keys():
-        print("Creating contract yaml for {}".format(cid))
+        print(f"Creating contract yaml for {cid}")
         contract_data = create_contract(customers[cid], positions[cid])
-        save_contract_yaml(contracts_dir, contract_data)
+        save_contract_yaml(settings, contract_data)
 
 
 def send_contract(settings, cid):
@@ -158,4 +160,4 @@ def send_contract(settings, cid):
 
 def create_contracts(settings):
     positions = get_positions(settings.positions_dir)
-    create_yaml_contracts(settings.contracts_dir)
+    create_yaml_contracts(settings)

@@ -42,8 +42,7 @@ optional_settings = {
     "invoice_template_file": "invoice_template.j2.html",
     "invoices_dir": "invoices",
     "logo_file": "logo.svg",
-    "policy_attachment_asset_file": None,
-    "positions_dir": "positions",
+    "policy_attachment_asset_file": "policy.pdf",
 }
 possible_settings = set(required_settings + list(optional_settings.keys()))
 
@@ -121,6 +120,7 @@ def get_settings_from_file(
 
         # prepend base_path to all _dir and _file settings
         for s_key, s_value in settings_data.items():
+            # print(s_key, s_value)
             if s_key.endswith(("_file", "_dir")):
                 if s_key.endswith(("_asset_file", "_template_file")):
                     s_value = base_path / settings_data["assets_dir"] / s_value

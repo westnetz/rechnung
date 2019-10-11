@@ -55,7 +55,7 @@ def generate_invoice(settings, contract, year, month):
         settings.delivery_date_format
     )
     invoice_data["id"] = f"{contract['cid']}.{year}.{month:02}"
-    invoice_data["period"] = "{}-{}".format(year, month)
+    invoice_data["period"] = f"{year}.{month}"
     invoice_data["total_gross"] = gross
     invoice_data["total_net"] = net
     invoice_data["total_vat"] = vat
@@ -93,7 +93,7 @@ def render_invoices(settings):
             invoice_data["logo_path"] = logo_path
             invoice_data["company"] = settings.company
 
-            print("Rendering invoice pdf for {}".format(invoice_data["id"]))
+            print(f"Rendering invoice pdf for {invoice_data['id']}")
 
             # Format data for printing
             for element in ["total_net", "total_gross", "total_vat"]:
@@ -117,25 +117,25 @@ def render_invoices(settings):
 def save_invoice_yaml(settings, invoice_data):
     invoice_contract_dir = settings.invoices_dir / invoice_data["cid"]
 
-    if not invoice_contract_dir.iterdir():
-        os.mkdir(invoice_contract_dir)
+    if not invoice_contract_dir.is_dir():
+        invoice_contract_dir.mkdir()
 
     outfilename = invoice_contract_dir / f"{invoice_data['id']}.yaml"
     try:
         with open(outfilename, "x") as outfile:
             outfile.write(yaml.dump(invoice_data, default_flow_style=False))
     except FileExistsError:
-        print("Invoice {} already exists.".format(outfilename))
+        print(f"Invoice {outfilename} already exists.")
 
 
 def create_invoices(settings, year, month):
-    contracts = get_contracts(settings)
+    contracts = get_contracts(settings, year, month)
     create_yaml_invoices(settings, contracts, year, month)
 
 
 def create_yaml_invoices(settings, contracts, year, month):
     for cid, contract in contracts.items():
-        print("Creating invoice yaml for {}".format(cid))
+        print(f"Creating invoice yaml {cid}.{year}.{month}")
         invoice_data = generate_invoice(settings, contract, year, month)
         save_invoice_yaml(settings, invoice_data)
 
