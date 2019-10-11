@@ -20,30 +20,29 @@ od = pd / ORIG_DIR
 # in the settings.yaml
 required_settings = [
     "company",
-    "vat",
-    "locale",
-    "delivery_date_format",
-    "invoice_mail_subject",
     "contract_mail_subject",
+    "insecure",
+    "invoice_mail_subject",
+    "locale",
+    "password",
     "sender",
     "server",
     "username",
-    "password",
-    "insecure",
-    "policy_attachment_asset_file",
+    "vat",
 ]
 optional_settings = {
-    "contracts_dir": "contracts",
-    "customers_dir": "customers",
-    "positions_dir": "positions",
-    "invoices_dir": "invoices",
     "assets_dir": "assets",
-    "contract_mail_template_file": "contract_mail_template.j2",
     "contract_css_asset_file": "contract.css",
+    "contract_mail_template_file": "contract_mail_template.j2",
     "contract_template_file": "contract_template.j2.html",
-    "invoice_mail_template_file": "invoice_mail_template.j2",
+    "contracts_dir": "contracts",
+    "delivery_date_format": "%d. %B %Y",
     "invoice_css_asset_file": "invoice.css",
+    "invoice_mail_template_file": "invoice_mail_template.j2",
     "invoice_template_file": "invoice_template.j2.html",
+    "invoices_dir": "invoices",
+    "logo_file": "logo.svg",
+    "policy_attachment_asset_file": "policy.pdf",
 }
 possible_settings = set(required_settings + list(optional_settings.keys()))
 
@@ -60,7 +59,7 @@ class RequiredSettingMissingError(Exception):
 
 def create_required_settings_file(cwd, settings_file=SETTINGS_FILE):
     """
-    Creates a settings file with all required settings listed, to 
+    Creates a settings file with all required settings listed, to
     be filled by the user accordingly.
     """
     settings_path = Path(cwd) / settings_file
@@ -121,6 +120,7 @@ def get_settings_from_file(
 
         # prepend base_path to all _dir and _file settings
         for s_key, s_value in settings_data.items():
+            # print(s_key, s_value)
             if s_key.endswith(("_file", "_dir")):
                 if s_key.endswith(("_asset_file", "_template_file")):
                     s_value = base_path / settings_data["assets_dir"] / s_value
