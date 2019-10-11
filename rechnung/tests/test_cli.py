@@ -27,7 +27,8 @@ def initialized_path(tmp_path_factory):
     Returns a path where rechnung is initialized in order to verify correct creation
     of directories and files
     """
-    tmp_path = tmp_path_factory.getbasetemp().joinpath("rechnung_initialized").mkdir()
+    tmp_path = tmp_path_factory.getbasetemp() / "rechnung_initialized"
+    tmp_path.mkdir()
     cli.cwd = tmp_path
     runner = CliRunner()
     result = runner.invoke(cli.cli1, ["init"])
