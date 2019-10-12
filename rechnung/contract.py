@@ -1,7 +1,5 @@
 import datetime
 import locale
-import os
-import os.path
 import yaml
 from collections import OrderedDict
 
@@ -69,7 +67,6 @@ def render_contracts(settings):
                 except ValueError:
                     pass
 
-            print(contract_data)
             contract_html = template.render(contract=contract_data)
 
             generate_pdf(

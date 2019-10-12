@@ -1,7 +1,5 @@
 import datetime
 import locale
-import os
-import os.path
 from pathlib import Path
 import yaml
 
@@ -73,10 +71,7 @@ def iterate_invoices(settings):
     for d in settings.invoices_dir.iterdir():
         contract_invoice_dir = settings.invoices_dir / d
         if contract_invoice_dir.is_dir():
-            for filename in contract_invoice_dir.iterdir():
-                if not filename.endswith(".yaml"):
-                    continue
-
+            for filename in contract_invoice_dir.glob("*.yaml"):
                 yield contract_invoice_dir, filename
 
 
@@ -85,10 +80,9 @@ def render_invoices(settings):
     logo_path = settings.assets_dir / settings.logo_file
 
     for contract_invoice_dir, filename in iterate_invoices(settings):
-        if not os.path.isfile(
-            os.path.join(contract_invoice_dir, filename[:-5]) + ".pdf"
-        ):
-            with open(os.path.join(contract_invoice_dir, filename)) as yaml_file:
+        invoice_pdf_filename = filename.with_suffix(".pdf")
+        if not invoice_pdf_filename.is_file():
+            with open(filename) as yaml_file:
                 invoice_data = yaml.safe_load(yaml_file.read())
             invoice_data["logo_path"] = logo_path
             invoice_data["company"] = settings.company
@@ -106,12 +100,11 @@ def render_invoices(settings):
 
             invoice_html = template.render(invoice=invoice_data)
 
-            invoice_pdf_filename = (
-                settings.contract_invoice_dir / f"{invoice_data['id']}.pdf"
-            )
             generate_pdf(
                 invoice_html, settings.invoice_css_asset_file, invoice_pdf_filename
             )
+        else:
+            print(f"Invoice {invoice_pdf_filename} already exists")
 
 
 def save_invoice_yaml(settings, invoice_data):
@@ -146,21 +139,16 @@ def send_invoices(settings, year, month):
     for d in settings.invoices_dir.iterdir():
         customer_invoice_dir = settings.invoices_dir / d
         if customer_invoice_dir.iterdir():
-            for filename in customer_invoice_dir.iterdir():
-                if not filename.endswith(".yaml"):
-                    continue
-
+            for filename in customer_invoice_dir.glob("*.yaml"):
                 file_suffix = ".".join(filename.split(".")[-3:-1])
 
                 if file_suffix != f"{year}.{month:02}":
                     continue
 
-                with open(os.path.join(customer_invoice_dir, filename)) as yaml_file:
+                with open(customer_invoice_dir / filename) as yaml_file:
                     invoice_data = yaml.safe_load(yaml_file)
 
-                invoice_pdf_path = os.path.join(
-                    customer_invoice_dir, f"{filename[:-5]}.pdf"
-                )
+                invoice_pdf_path = customer_invoice_dir / filename.with_suffix(".pdf")
                 invoice_pdf_filename = f"{settings.company} {filename[:-5]}.pdf"
                 invoice_mail_text = mail_template.render(invoice=invoice_data)
                 invoice_pdf = get_pdf(invoice_pdf_path)
