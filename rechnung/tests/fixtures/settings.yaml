@@ -1,0 +1,10 @@
+company: Westnetz and Reudnetz Software
+contract_mail_subject: "Your new contract"
+insecure: true
+invoice_mail_subject: "Your new invoice"
+locale: "de_DE.utf8"
+password: null
+sender: null
+server: null
+username: null
+vat: 19
