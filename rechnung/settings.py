@@ -1,4 +1,3 @@
-import os.path
 import yaml
 from pathlib import Path
 from collections import namedtuple
