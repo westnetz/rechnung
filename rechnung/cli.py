@@ -51,7 +51,9 @@ def print_contracts():
     settings = get_settings_from_cwd(cwd)
     for cid, data in get_contracts(settings).items():
         slug = data.get("email", "unknown")
-        total_monthly = sum(map(lambda i: i["price"], data["items"]))
+        total_monthly = sum(
+            map(lambda i: i.get("quantity", 1) * i["price"], data["items"])
+        )
         print(f"{cid}: {slug} {data['start']} {total_monthly}€")
 
 
@@ -65,7 +67,10 @@ def print_stats():
     print(f"{len(contracts)} contracts in total")
 
     total_monthly = sum(
-        map(lambda x: x[0]["price"], list(map(lambda i: i["items"], contracts)))
+        map(
+            lambda x: x[0].get("quantity", 1) * x[0]["price"],
+            list(map(lambda i: i["items"], contracts)),
+        )
     )
     print(f"{total_monthly:.2f}€ per month")
 
