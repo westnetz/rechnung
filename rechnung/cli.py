@@ -5,6 +5,7 @@ import sys
 from .settings import get_settings_from_cwd, copy_assets, create_required_settings_file
 from .invoice import create_invoices, render_invoices, send_invoices
 from .contract import create_contracts, render_contracts, send_contract, get_contracts
+from .transactions import read_csv_files
 
 cwd = os.getcwd()
 
@@ -53,6 +54,19 @@ def print_contracts():
         slug = data.get("email", "unknown")
         total_monthly = sum(map(lambda i: i["price"], data["items"]))
         print(f"{cid}: {slug} {data['start']} {total_monthly}€")
+
+
+@cli1.command()
+@click.argument("year", type=int)
+@click.argument("month", type=int)
+def print_csv(year, month):
+    """
+    Parse CSV files for a specific year/month combo
+    """
+    settings = get_settings_from_cwd(cwd)
+    print(f"Parsing CSV files for {year}{month}")
+    for transaction in read_csv_files(settings, year, month):
+        print("{date}: {type[0]} {amount:>6}€ {sender}".format(**transaction))
 
 
 @cli1.command()

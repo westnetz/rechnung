@@ -36,6 +36,7 @@ optional_settings = {
     "contract_mail_template_file": "contract_mail_template.j2",
     "contract_template_file": "contract_template.j2.html",
     "contracts_dir": "contracts",
+    "csv_dir": "csv",
     "delivery_date_format": "%d. %B %Y",
     "invoice_css_asset_file": "invoice.css",
     "invoice_mail_template_file": "invoice_mail_template.j2",
