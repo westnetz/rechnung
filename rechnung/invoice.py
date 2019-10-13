@@ -1,17 +1,9 @@
 import datetime
 import locale
-from pathlib import Path
 import yaml
 
-from .settings import get_settings_from_cwd
 from .contract import get_contracts
-from .helpers import (
-    generate_pdf,
-    get_pdf,
-    get_template,
-    generate_email_with_pdf_attachment,
-    send_email,
-)
+from .helpers import generate_pdf, get_template, generate_email, send_email
 
 
 def fill_invoice_items(settings, items):
@@ -77,15 +69,14 @@ def iterate_invoices(settings):
 
 def render_invoices(settings):
     template = get_template(settings.invoice_template_file)
-    logo_path = settings.assets_dir / settings.logo_file
 
     for contract_invoice_dir, filename in iterate_invoices(settings):
         invoice_pdf_filename = filename.with_suffix(".pdf")
         if not invoice_pdf_filename.is_file():
             with open(filename) as yaml_file:
                 invoice_data = yaml.safe_load(yaml_file.read())
-            invoice_data["logo_path"] = logo_path
-            invoice_data["company"] = settings.company
+            invoice_data.update(settings._asdict())
+            print(invoice_data)
 
             print(f"Rendering invoice pdf for {invoice_data['id']}")
 
@@ -133,43 +124,47 @@ def create_yaml_invoices(settings, contracts, year, month):
         save_invoice_yaml(settings, invoice_data)
 
 
-def send_invoices(settings, year, month):
+def send_invoices(settings, year, month, force_resend=False):
     mail_template = get_template(settings.invoice_mail_template_file)
 
     for d in settings.invoices_dir.iterdir():
         customer_invoice_dir = settings.invoices_dir / d
         if customer_invoice_dir.iterdir():
             for filename in customer_invoice_dir.glob("*.yaml"):
-                file_suffix = ".".join(filename.split(".")[-3:-1])
-
-                if file_suffix != f"{year}.{month:02}":
+                if not filename.name.endswith(f"{year}.{month:02}.yaml"):
                     continue
 
                 with open(customer_invoice_dir / filename) as yaml_file:
                     invoice_data = yaml.safe_load(yaml_file)
 
+                # don't send invoices multiple times
+                if invoice_data.get("sent") and not force_resend:
+                    print(f"Skip previously sent invoice {invoice_data['id']}")
+                    continue
+
+                invoice_pdf_filename = (
+                    f"{settings.company} {filename.with_suffix('.pdf').name}"
+                )
                 invoice_pdf_path = customer_invoice_dir / filename.with_suffix(".pdf")
-                invoice_pdf_filename = f"{settings.company} {filename[:-5]}.pdf"
                 invoice_mail_text = mail_template.render(invoice=invoice_data)
-                invoice_pdf = get_pdf(invoice_pdf_path)
 
-                invoice_receiver = invoice_data["email"]
-
-                invoice_email = generate_email_with_pdf_attachment(
-                    invoice_receiver,
-                    settings.sender,
-                    settings.invoice_mail_subject,
+                invoice_email = generate_email(
+                    settings,
+                    invoice_data["email"],
+                    f"{settings.invoice_mail_subject} {invoice_data['id']}",
                     invoice_mail_text,
-                    invoice_pdf,
-                    invoice_pdf_filename,
+                    [(invoice_pdf_path, invoice_pdf_filename)],
                 )
 
                 print(f"Sending invoice {invoice_data['id']}")
 
-                send_email(
+                if send_email(
                     invoice_email,
                     settings.server,
                     settings.username,
                     settings.password,
                     settings.insecure,
-                )
+                ):
+                    with open(customer_invoice_dir / filename, "w") as yaml_file:
+                        invoice_data["sent"] = True
+                        yaml_file.write(yaml.dump(invoice_data))

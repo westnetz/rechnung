@@ -4,14 +4,7 @@ import yaml
 from collections import OrderedDict
 
 from pathlib import Path
-from .helpers import (
-    generate_pdf,
-    get_pdf,
-    get_template,
-    generate_email_with_pdf_attachment,
-    generate_email_with_pdf_attachments,
-    send_email,
-)
+from .helpers import generate_pdf, get_template, generate_email, send_email
 
 
 def get_contracts(settings, year=None, month=None, inactive=False):
@@ -31,7 +24,7 @@ def get_contracts(settings, year=None, month=None, inactive=False):
     return {k: contracts[k] for k in sorted(contracts)}
 
 
-def create_contract(customer, positions):
+def create_contract(settings, customer, positions):
     contract_data = customer
     contract_data["product"] = positions[0]
     contract_data["product"]["price"] = round(
@@ -86,7 +79,7 @@ def save_contract_yaml(settings, contract_data):
 def create_yaml_contracts(settings, customers, positions):
     for cid in customers.keys():
         print(f"Creating contract yaml for {cid}")
-        contract_data = create_contract(customers[cid], positions[cid])
+        contract_data = create_contract(settings, customers[cid], positions[cid])
         save_contract_yaml(settings, contract_data)
 
 
@@ -107,41 +100,30 @@ def send_contract(settings, cid):
 
         contract_pdf_filename = f"{settings.company} {contract_yaml_filename.stem}.pdf"
         contract_mail_text = mail_template.render()
-        contract_pdf = get_pdf(contract_pdf_path)
 
-        pdf_documents = [contract_pdf]
-        pdf_filenames = [contract_pdf_filename]
+        attachments = [(contract_pdf_path, contract_pdf_filename)]
 
         for item in contract_data["items"]:
             item_pdf_file = f"{item['description']}.pdf"
-            if not item_pdf_file in pdf_filenames:
-                item_pdf_path = Path(settings.assets_dir / item_pdf_file)
-                if item_pdf_path.is_file():
-                    item_pdf = get_pdf(item_pdf_path)
-                    pdf_documents.append(item_pdf)
-                    pdf_filenames.append(item_pdf_file)
-                else:
-                    print(f"Item file {item_pdf_file} not found")
+            item_pdf_path = Path(settings.assets_dir / item_pdf_file)
+            if item_pdf_path.is_file():
+                attachments.append((item_pdf_path, item_pdf_file))
+            else:
+                print(f"Item file {item_pdf_file} not found")
 
         if settings.policy_attachment_asset_file:
             policy_pdf_file = settings.policy_attachment_asset_file
             policy_pdf_path = settings.assets_dir / policy_pdf_file
             if policy_pdf_path.is_file():
-                policy_pdf = get_pdf(policy_pdf_path)
-                pdf_documents.append(policy_pdf)
-                pdf_filenames.append(policy_pdf_file)
+                attachments.append((policy_pdf_path, policy_pdf_file))
             else:
-                print(
-                    f"Policy file {settings.policy_attachment_asset_file.name} not found"
-                )
+                print(f"Missing {settings.policy_attachment_asset_file.name}")
 
-        contract_email = generate_email_with_pdf_attachments(
+        contract_email = generate_email(
             contract_data["email"],
-            settings.sender,
             settings.contract_mail_subject,
             contract_mail_text,
-            pdf_documents,
-            pdf_filenames,
+            attachments,
         )
 
         print("Sending contract {}".format(contract_data["cid"]))
@@ -156,5 +138,4 @@ def send_contract(settings, cid):
 
 
 def create_contracts(settings):
-    positions = get_positions(settings.positions_dir)
     create_yaml_contracts(settings)
