@@ -1,4 +1,6 @@
 company: Westnetz and Reudnetz Software
+company_address: "Karl-Heine-Str. 93, 04229 Leipzig"
+company_bank: "Volksbank Leipzig"
 contract_mail_subject: "Your new contract"
 insecure: true
 invoice_mail_subject: "Your new invoice"
