@@ -31,17 +31,6 @@ def get_contracts(settings, year=None, month=None, inactive=False):
     return {k: contracts[k] for k in sorted(contracts)}
 
 
-def create_contract(customer, positions):
-    contract_data = customer
-    contract_data["product"] = positions[0]
-    contract_data["product"]["price"] = round(
-        positions[0]["price"] * 1.0 + settings.vat, 2
-    )
-    contract_data["email"] = customer["email"]
-
-    return contract_data
-
-
 def render_contracts(settings):
     template = get_template(settings.contract_template_file)
     logo_path = settings.assets_dir / "logo.png"
@@ -72,22 +61,6 @@ def render_contracts(settings):
             generate_pdf(
                 contract_html, settings.contract_css_asset_file, contract_pdf_filename
             )
-
-
-def save_contract_yaml(settings, contract_data):
-    outfilename = settings.contracts_dir / contract_data["cid"] + ".yaml"
-    try:
-        with open(outfilename, "x") as outfile:
-            outfile.write(yaml.dump(contract_data, default_flow_style=False))
-    except FileExistsError:
-        print("Contract {} already exists.".format(outfilename))
-
-
-def create_yaml_contracts(settings, customers, positions):
-    for cid in customers.keys():
-        print(f"Creating contract yaml for {cid}")
-        contract_data = create_contract(customers[cid], positions[cid])
-        save_contract_yaml(settings, contract_data)
 
 
 def send_contract(settings, cid):
@@ -153,8 +126,3 @@ def send_contract(settings, cid):
             settings.password,
             settings.insecure,
         )
-
-
-def create_contracts(settings):
-    positions = get_positions(settings.positions_dir)
-    create_yaml_contracts(settings)
