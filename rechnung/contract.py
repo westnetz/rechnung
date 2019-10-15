@@ -7,9 +7,12 @@ from pathlib import Path
 from .helpers import generate_pdf, get_template, generate_email, send_email
 
 
-def get_contracts(settings, year=None, month=None, inactive=False):
+def get_contracts(settings, year=None, month=None, cid_only=None, inactive=False):
     contracts = OrderedDict()
     for filename in settings.contracts_dir.glob("*.yaml"):
+        if cid_only and cid_only != filename.stem:
+            continue
+
         with open(Path(settings.contracts_dir / filename), "r") as contract_file:
             contract = yaml.safe_load(contract_file)
 
