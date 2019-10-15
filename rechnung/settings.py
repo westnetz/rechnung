@@ -19,9 +19,10 @@ od = pd / ORIG_DIR
 # in the settings.yaml
 required_settings = [
     "company",
+    "company_address",
+    "company_bank",
     "contract_mail_subject",
     "insecure",
-    "invoice_mail_subject",
     "locale",
     "password",
     "sender",
@@ -30,6 +31,7 @@ required_settings = [
     "vat",
 ]
 optional_settings = {
+    "invoice_mail_subject": "Rechnung",
     "assets_dir": "assets",
     "contract_css_asset_file": "contract.css",
     "contract_mail_template_file": "contract_mail_template.j2",
@@ -40,7 +42,7 @@ optional_settings = {
     "invoice_mail_template_file": "invoice_mail_template.j2",
     "invoice_template_file": "invoice_template.j2.html",
     "invoices_dir": "invoices",
-    "logo_file": "logo.svg",
+    "logo_asset_file": "logo.svg",
     "policy_attachment_asset_file": "policy.pdf",
 }
 possible_settings = set(required_settings + list(optional_settings.keys()))
@@ -90,7 +92,7 @@ def get_settings_from_file(
     Opens a settings.yaml and returns its contents as
     a namedtuple "Settings". It checks if all required
     settings are found in the settings file, as well
-    if there are any unknown settings given. 
+    if there are any unknown settings given.
     Finally the base_path is prepended to all settings
     ending with "_file" or "_dir".
     """
@@ -135,8 +137,8 @@ def get_settings_from_file(
 
 def copy_assets(target_dir, orig_dir=od):
     """
-    Copy the original assets, which are shipped with the tool, 
-    from the original directory (where the tool is installed) 
+    Copy the original assets, which are shipped with the tool,
+    from the original directory (where the tool is installed)
     to the cwd (where the data is stored).
     """
     for asset in orig_dir.glob("*"):

@@ -1,10 +1,9 @@
 import click
 import os
-import sys
 
 from .settings import get_settings_from_cwd, copy_assets, create_required_settings_file
 from .invoice import create_invoices, render_invoices, send_invoices
-from .contract import create_contracts, render_contracts, send_contract, get_contracts
+from .contract import render_contracts, send_contract, get_contracts
 
 cwd = os.getcwd()
 
