@@ -76,7 +76,14 @@ def test_print_stats(cli_test_data_path):
     cli1, path = cli_test_data_path
     runner = CliRunner()
     result = runner.invoke(cli1, ["print-stats"])
-    assert "108.66" in result.output
+    assert result.output == "2 active contracts of 3 in total\n108.66€ per month\n"
 
 
-#    assert False
+def test_print_contracts(cli_test_data_path):
+    cli1, path = cli_test_data_path
+    runner = CliRunner()
+    result = runner.invoke(cli1, ["print-contracts"])
+    assert (
+        result.output
+        == "1000: martha.muster@email.tld 2019-06-01 60.21€\n1001: mike.murks@email.tld 2030-06-01 13.37€\n1002: frank.nord@email.tld 2019-06-01 48.45€\n"
+    )
