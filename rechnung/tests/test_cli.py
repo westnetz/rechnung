@@ -86,7 +86,7 @@ def test_print_contracts(cli_test_data_path):
     result = runner.invoke(cli1, ["print-contracts"])
     assert (
         result.output
-        == "1000: martha.muster@email.tld 2019-06-01 60.21€\n1001: mike.murks@email.tld 2030-06-01 13.37€\n1002: frank.nord@email.tld 2019-06-01 48.45€\n"
+        == "1000: Martha Muster 2019-06-01 60.21€\n1001: Murks GmbH, Mike Murks 2030-06-01 13.37€\n1002: Frank Nord 2019-06-01 48.45€\n"
     )
 
 def test_invoice_create(cli_test_data_path):

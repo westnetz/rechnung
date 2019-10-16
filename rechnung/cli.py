@@ -53,11 +53,16 @@ def print_contracts():
     """
     settings = get_settings_from_cwd(cwd)
     for cid, data in contract.get_contracts(settings).items():
-        slug = data.get("slug", "unknown")
+        company_name = data.get("company", "")
+        name = data.get("name", "unknown")
+        if company_name:
+            company_name += f", {name}"
+        else:
+            company_name = name
         total_monthly = sum(
             map(lambda i: i.get("quantity", 1) * i["price"], data["items"])
         )
-        print(f"{cid}: {slug} {data['start']} {total_monthly}€")
+        print(f"{cid}: {company_name} {data['start']} {total_monthly}€")
 
 
 @cli1.command()
