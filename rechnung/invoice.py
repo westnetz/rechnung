@@ -6,7 +6,7 @@ from .contract import get_contracts
 from .helpers import generate_pdf, get_template, generate_email, send_email
 
 
-def fill_invoice_items(settings, items):
+def fill_invoice_items(settings, items: dict):
     invoice_total_net = float()
     invoice_total_vat = float()
     invoice_total_gross = float()
@@ -44,14 +44,14 @@ def generate_invoice(settings, contract, year, month):
     invoice_data["date"] = datetime.datetime.now().strftime(
         settings.delivery_date_format
     )
+    invoice_data["email"] = contract["email"]
     invoice_data["id"] = f"{contract['cid']}.{year}.{month:02}"
+    invoice_data["items"] = invoice_items
     invoice_data["period"] = f"{year}.{month}"
     invoice_data["total_gross"] = gross
     invoice_data["total_net"] = net
     invoice_data["total_vat"] = vat
     invoice_data["vat"] = settings.vat
-    invoice_data["email"] = contract["email"]
-    invoice_data["items"] = invoice_items
     return invoice_data
 
 
@@ -76,7 +76,6 @@ def render_invoices(settings):
             with open(filename) as yaml_file:
                 invoice_data = yaml.safe_load(yaml_file.read())
             invoice_data.update(settings._asdict())
-            print(invoice_data)
 
             print(f"Rendering invoice pdf for {invoice_data['id']}")
 
@@ -98,36 +97,46 @@ def render_invoices(settings):
             print(f"Invoice {invoice_pdf_filename} already exists")
 
 
-def save_invoice_yaml(settings, invoice_data):
+def save_invoice_yaml(settings, invoice_data, force: bool = False):
     invoice_contract_dir = settings.invoices_dir / invoice_data["cid"]
 
     if not invoice_contract_dir.is_dir():
         invoice_contract_dir.mkdir()
 
-    outfilename = invoice_contract_dir / f"{invoice_data['id']}.yaml"
-    try:
-        with open(outfilename, "x") as outfile:
-            outfile.write(yaml.dump(invoice_data, default_flow_style=False))
-    except FileExistsError:
-        print(f"Invoice {outfilename} already exists.")
+    invoice_path = invoice_contract_dir / f"{invoice_data['id']}.yaml"
+    if not invoice_path.is_file() or force:
+        with open(invoice_path, "w") as invoice_fp:
+            invoice_fp.write(yaml.dump(invoice_data, default_flow_style=False))
+    else:
+        print(f"Invoice {invoice_path} already exists.")
 
 
-def create_invoices(settings, year, month):
-    contracts = get_contracts(settings, year, month)
-    create_yaml_invoices(settings, contracts, year, month)
+def create_invoices(settings, year, month, cid_only: int = None, force: bool = False):
+    if force:
+        print("Force create enabled")
 
+    if cid_only:
+        print(f"Only creating to {cid_only}")
 
-def create_yaml_invoices(settings, contracts, year, month):
+    contracts = get_contracts(settings, year, month, cid_only)
     for cid, contract in contracts.items():
         print(f"Creating invoice yaml {cid}.{year}.{month}")
         invoice_data = generate_invoice(settings, contract, year, month)
-        save_invoice_yaml(settings, invoice_data)
+        save_invoice_yaml(settings, invoice_data, force)
 
 
-def send_invoices(settings, year, month, force_resend=False):
+def send_invoices(settings, year, month, cid_only: int = None, force: bool = None):
     mail_template = get_template(settings.invoice_mail_template_file)
 
+    if force:
+        print("Force resend enabled")
+
     for d in settings.invoices_dir.iterdir():
+        if cid_only and cid_only != d.name:
+            continue
+        else:
+            print(f"Only sending to {cid_only}")
+
         customer_invoice_dir = settings.invoices_dir / d
         if customer_invoice_dir.iterdir():
             for filename in customer_invoice_dir.glob("*.yaml"):
@@ -138,7 +147,7 @@ def send_invoices(settings, year, month, force_resend=False):
                     invoice_data = yaml.safe_load(yaml_file)
 
                 # don't send invoices multiple times
-                if invoice_data.get("sent") and not force_resend:
+                if invoice_data.get("sent") and not force:
                     print(f"Skip previously sent invoice {invoice_data['id']}")
                     continue
 

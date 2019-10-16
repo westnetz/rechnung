@@ -3,15 +3,41 @@ import locale
 import yaml
 from collections import OrderedDict
 
-from pathlib import Path
 from .helpers import generate_pdf, get_template, generate_email, send_email
 
 
-def get_contracts(settings, year=None, month=None, inactive=False):
+def get_contracts(
+    settings,
+    year: int = None,
+    month: int = None,
+    cid_only: int = None,
+    inactive: bool = False,
+    slug: str = None,
+):
+    """
+    Get list of stored contracts
+
+    Args:
+        settings (NamedTuple): Currently active settings
+        year (int): Contract must be created before that time
+        month (int: Combined with year
+        cid_only (int): Only return single contract based on argument
+        inactive (bool): return also inactive contracts
+        slug (str): return only contract based on argument
+
+    Returns:
+        OrderedDict: contract IDs are keys and contracts the values
+    """
     contracts = OrderedDict()
     for filename in settings.contracts_dir.glob("*.yaml"):
-        with open(Path(settings.contracts_dir / filename), "r") as contract_file:
+        if cid_only and cid_only != filename.stem:
+            continue
+
+        with open(settings.contracts_dir / filename, "r") as contract_file:
             contract = yaml.safe_load(contract_file)
+
+        if slug and slug != contract["slug"]:
+            continue
 
         if year and month:
             if contract["start"] < datetime.date(year, month, 1):
@@ -28,13 +54,13 @@ def render_contracts(settings):
     template = get_template(settings.contract_template_file)
     logo_path = settings.assets_dir / "logo.png"
 
-    for contract_filename in Path(settings.contracts_dir).glob("*.yaml"):
-        contract_pdf_filename = "{}.pdf".format(str(contract_filename).split(".")[0])
-        if not Path(contract_pdf_filename).is_file():
+    for contract_filename in settings.contracts_dir.glob("*.yaml"):
+        contract_pdf_filename = contract_filename.with_suffix(".pdf")
+        if not contract_pdf_filename.is_file():
 
             with open(contract_filename) as yaml_file:
                 contract_data = yaml.safe_load(yaml_file)
-            print("Rendering contract pdf for {}".format(contract_data["cid"]))
+            print(f"Rendering contract pdf for {contract_data['cid']}")
             contract_data["logo_path"] = logo_path
 
             for item in contract_data["items"]:
@@ -58,8 +84,8 @@ def render_contracts(settings):
 
 def send_contract(settings, cid):
     mail_template = get_template(settings.contract_mail_template_file)
-    contract_pdf_path = Path(settings.contracts_dir) / f"{cid}.pdf"
-    contract_yaml_filename = Path(settings.contracts_dir) / f"{cid}.yaml"
+    contract_pdf_path = settings.contracts_dir / f"{cid}.pdf"
+    contract_yaml_filename = settings.contracts_dir / f"{cid}.yaml"
 
     if not contract_pdf_path.is_file():
         print(f"Contract {cid} not found")
@@ -78,7 +104,7 @@ def send_contract(settings, cid):
 
         for item in contract_data["items"]:
             item_pdf_file = f"{item['description']}.pdf"
-            item_pdf_path = Path(settings.assets_dir / item_pdf_file)
+            item_pdf_path = settings.assets_dir / item_pdf_file
             if item_pdf_path.is_file():
                 attachments.append((item_pdf_path, item_pdf_file))
             else:
@@ -93,6 +119,7 @@ def send_contract(settings, cid):
                 print(f"Missing {settings.policy_attachment_asset_file.name}")
 
         contract_email = generate_email(
+            settings,
             contract_data["email"],
             settings.contract_mail_subject,
             contract_mail_text,
