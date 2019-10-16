@@ -1,6 +1,7 @@
 import pytest
 import rechnung.cli as cli
 import rechnung.settings as settings
+import yaml
 
 from click.testing import CliRunner
 from shutil import copytree
@@ -87,3 +88,26 @@ def test_print_contracts(cli_test_data_path):
         result.output
         == "1000: martha.muster@email.tld 2019-06-01 60.21€\n1001: mike.murks@email.tld 2030-06-01 13.37€\n1002: frank.nord@email.tld 2019-06-01 48.45€\n"
     )
+
+def test_invoice_create(cli_test_data_path):
+    cli1, path = cli_test_data_path
+    s = settings.get_settings_from_cwd(path)
+    runner = CliRunner()
+    result = runner.invoke(cli1, ["create", "2019", "10"])
+    invoice_1000_path = path.joinpath(s.invoices_dir, "1000", "1000.2019.10.yaml")
+    invoice_1002_path = path.joinpath(s.invoices_dir, "1002", "1002.2019.10.yaml")
+    assert invoice_1000_path.is_file()
+    assert not path.joinpath(s.invoices_dir, "1001", "1001.2019.10.yaml").is_file()
+    assert invoice_1002_path.is_file()
+
+    with open(invoice_1000_path) as infile:
+        invoice_data = yaml.safe_load(infile)
+        assert invoice_data["total_net"] == 50.6
+        assert invoice_data["total_vat"] == 9.61
+        assert invoice_data["total_gross"] == 60.21
+    with open(invoice_1002_path) as infile:
+        invoice_data = yaml.safe_load(infile)
+        assert invoice_data["total_net"] == 40.71
+        assert invoice_data["total_vat"] == 7.74
+        assert invoice_data["total_gross"] == 48.45
+
