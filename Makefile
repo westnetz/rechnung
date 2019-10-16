@@ -21,7 +21,7 @@ black: ## Format code
 
 .PHONY: test
 test: ## Run unittests
-	python -m pytest --cov=./ $(PYTEST_ARGS)
+	pytest -v rechnung --cov=./ --cov-report term-missing:skip-covered $(PYTEST_ARGS)
 
 .PHONY: git-flow
 git-flow: ## Initialize git-flow

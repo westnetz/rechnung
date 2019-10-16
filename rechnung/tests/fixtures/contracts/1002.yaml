@@ -1,0 +1,17 @@
+address:
+- "Kurt-Eisner-Straße 42"
+- 04242 Leipzig
+cid: '1002'
+dob: 1978-09-01
+start: 2019-06-01
+email: frank.nord@email.tld
+name: Frank Nord
+notify: false
+phone: '+491234567890'
+items:
+  - description: Another awesome product
+    price: 23.42
+    quantity: 2
+  - description: Something
+    price: 1.61
+    quantity: 1

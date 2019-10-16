@@ -45,17 +45,6 @@ You can now edit the *rechnung.config.yaml* file to your needs. You need to ente
 
 Customization of the invoices can be done by editing the invoice template *templates/invoice_template.j2.html* and the corresponding stylesheet in *assets/inovice.css*. 
 
-### Customer Creation / Data import
-
-If you already have customer data (in the correct format, which will only be the case if you are the accountant of westnetz w.V.) you can import it via the
-
-```
-$ rechnung import-customers CUSTOMER_DIRECTORY
-```
-
-Else you have to write your own importer, or create your customers by hand. See the created
-files *customers/1000.yaml*, the example customer, with his *positions/1000.yaml* recurring invoice positions.
-
 ### Invoice Creation
 
 After creating your customers, you can create your first invoices. 
@@ -88,7 +77,7 @@ If you want to use the included mail delivery service, you should customize the 
 After doing that, you can send all the invoices you just created to your customers:
 
 ```
-$ rechnung send 2019.Q1
+$ rechnung send 2019 09
 ```
 
 This command will send all invoices with the given suffix to the customer given 
@@ -99,6 +88,7 @@ And that's it!
 ## Copyright
 
 F. Rämisch, 2019
+Paul Spooren, 2019
 
 ## License
 

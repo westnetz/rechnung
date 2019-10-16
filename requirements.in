@@ -1,5 +1,5 @@
 arrow==0.13.1
 Click==7.0
-Jinja2==2.10.1
+Jinja2==2.10.3
 PyYAML==5.1
 WeasyPrint==47

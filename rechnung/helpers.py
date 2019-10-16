@@ -1,15 +1,13 @@
-import yaml
 import smtplib
 import ssl
+import yaml
 
+from email.header import Header
+from email.message import EmailMessage
+import mimetypes
 from jinja2 import Template
 from weasyprint import HTML, CSS
 from weasyprint.fonts import FontConfiguration
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email import encoders
-from email.utils import formatdate
 
 
 def get_template(template_filename):
@@ -23,6 +21,7 @@ def get_template(template_filename):
     Returns:
         Template: jinja2 Template instance.
     """
+
     with open(template_filename) as template_file:
         return Template(template_file.read())
 
@@ -34,86 +33,57 @@ def send_email(msg, server, username, password, insecure=True):
     Args:
         msg (email.MIMEMultipart): The email to be sent.
     """
-    conn = smtplib.SMTP(server, 587)
-    context = ssl.create_default_context() if not insecure else None
-    conn.starttls(context=context)
-    conn.login(username, password)
-    conn.send_message(msg)
-    conn.quit()
+    try:
+        conn = smtplib.SMTP(server, 587)
+        context = ssl.create_default_context() if not insecure else None
+        conn.starttls(context=context)
+        conn.login(username, password)
+        conn.send_message(msg)
+        conn.quit()
+        return True
+    except Exception as e:
+        print(e)
+        quit(1)
 
 
-def generate_email_with_pdf_attachments(
-    mail_to, mail_from, mail_subject, mail_text, pdf_documents, attachment_filenames
-):
-    if not len(pdf_documents) == len(attachment_filenames):
-        raise ValueError(
-            "pdf_documents and attachment_filenames must be of same length."
-        )
-
-    msg = MIMEMultipart()
-    msg["Subject"] = mail_subject
-    msg["From"] = mail_from
-    msg["To"] = mail_to
-    msg["Date"] = formatdate(localtime=True)
-    msg.attach(MIMEText(mail_text, "plain"))
-
-    for document, filename in zip(pdf_documents, attachment_filenames):
-        payload = MIMEBase("application", "pdf")
-        payload.set_payload(document)
-        payload.add_header("Content-Disposition", "attachment", filename=filename)
-
-        encoders.encode_base64(payload)
-
-        msg.attach(payload)
-
-    return msg
-
-
-def generate_email_with_pdf_attachment(
-    mail_to, mail_from, mail_subject, mail_text, pdf_document, attachment_filename
+def generate_email(
+    settings, mail_to: str, mail_subject: str, mail_text: str, files=None
 ):
     """
-    Sends the invoice to the recipient.
+    Generate EmailMessage
 
     Args:
-        invoice_mail_text (str): Text for the email body
-        invoice_pdf (bytes): Invoice PDF
-        invoice_data (dict): Invoice Metadata object
+        settings
+        mail_to: receiver mail address
+        mail_subject: mail subject
+        mail_text: mail text
+        files (touple): list of file_path and file_name
 
     Returns:
-        email.MIMEMultipart: Invoice email message object
+        email.EmailMessage
 
     """
-
-    msg = MIMEMultipart()
+    msg = EmailMessage()
+    msg["To"] = Header(mail_to, "utf-8")
     msg["Subject"] = mail_subject
-    msg["From"] = mail_from
-    msg["To"] = mail_to
-    msg["Date"] = formatdate(localtime=True)
-    msg.attach(MIMEText(mail_text, "plain"))
+    msg["From"] = settings.sender
 
-    payload = MIMEBase("application", "pdf")
-    payload.set_payload(pdf_document)
-    payload.add_header(
-        "Content-Disposition", "attachment", filename=attachment_filename
-    )
+    msg.set_content(mail_text)
 
-    encoders.encode_base64(payload)
+    for file_path, file_name in files:
+        ctype, encoding = mimetypes.guess_type(file_path)
+        if ctype is None or encoding is not None:
+            ctype = "application/octet-stream"
+        maintype, subtype = ctype.split("/", 1)
+        with open(file_path, "rb") as fp:
+            msg.add_attachment(
+                fp.read(), maintype=maintype, subtype=subtype, filename=file_name
+            )
 
-    msg.attach(payload)
+    with open("outgoing.msg", "wb") as email_file:
+        email_file.write(bytes(msg))
 
     return msg
-
-
-def get_pdf(filename):
-    """
-    Reads a pdf file and returns its contents.
-
-    Args:
-        invoice_path (str) full path to the invoice file.
-    """
-    with open(filename, "rb") as infile:
-        return infile.read()
 
 
 def generate_pdf(html_data, css_data, path):
