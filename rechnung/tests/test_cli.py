@@ -115,7 +115,7 @@ def test_invoice_render(cli_test_data_path):
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
-    result = runner.invoke(cli1, ["render"])
+    result = runner.invoke(cli1, ["render-all"])
     assert path.joinpath(s.invoices_dir, "1000", "1000.2019.10.pdf").is_file()
     assert not path.joinpath(s.invoices_dir, "1001", "1001.2019.10.pdf").is_file()
     assert path.joinpath(s.invoices_dir, "1002", "1002.2019.10.pdf").is_file()
