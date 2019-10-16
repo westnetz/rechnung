@@ -6,7 +6,7 @@ from .contract import get_contracts
 from .helpers import generate_pdf, get_template, generate_email, send_email
 
 
-def fill_invoice_items(settings, items):
+def fill_invoice_items(settings, items: dict):
     invoice_total_net = float()
     invoice_total_vat = float()
     invoice_total_gross = float()
@@ -97,7 +97,7 @@ def render_invoices(settings):
             print(f"Invoice {invoice_pdf_filename} already exists")
 
 
-def save_invoice_yaml(settings, invoice_data, force=False):
+def save_invoice_yaml(settings, invoice_data, force: bool = False):
     invoice_contract_dir = settings.invoices_dir / invoice_data["cid"]
 
     if not invoice_contract_dir.is_dir():
@@ -111,7 +111,7 @@ def save_invoice_yaml(settings, invoice_data, force=False):
         print(f"Invoice {invoice_path} already exists.")
 
 
-def create_invoices(settings, year, month, cid_only=None, force=False):
+def create_invoices(settings, year, month, cid_only: int = None, force: bool = False):
     if force:
         print("Force create enabled")
 
@@ -125,7 +125,7 @@ def create_invoices(settings, year, month, cid_only=None, force=False):
         save_invoice_yaml(settings, invoice_data, force)
 
 
-def send_invoices(settings, year, month, cid_only, force):
+def send_invoices(settings, year, month, cid_only: int = None, force: bool = None):
     mail_template = get_template(settings.invoice_mail_template_file)
 
     if force:

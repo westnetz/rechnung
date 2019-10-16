@@ -35,7 +35,7 @@ def init():
 @click.argument("month", type=int)
 @click.option("-c", "--cid-only")
 @click.option("-f", "--force-recreate", "force", is_flag=True)
-def create_invoices(year, month, cid_only=None, force=False):
+def create_invoices(year: int, month: int, cid_only: int = None, force: bool = False):
     """
     Mass create invoices.
     """
@@ -92,7 +92,7 @@ def render_all():
 @click.argument("month", type=int)
 @click.option("-c", "--cid_only")
 @click.option("-f", "--force-resend", "force", is_flag=True)
-def send_invoices(year, month, cid_only=None, force=False):
+def send_invoices(year: int, month: int, cid_only: int = None, force: bool = False):
     """
     Send invoices by email.
     """
@@ -102,14 +102,23 @@ def send_invoices(year, month, cid_only=None, force=False):
 
 
 @cli1.command()
-@click.argument("cid", type=int)
-def send_contract(cid):
+@click.option("-c", "--cid")
+@click.option("-s", "--slug")
+def send_contract(cid: int = None, slug: str = None):
     """
-    Send contract by email.
+    Send contract by email based on cid or slug
+
+    Args:
+        cid (int): contract ID to send to
+        slug (str): contract slug to send to
     """
-    print(f"Sending contract {cid}")
     settings = get_settings_from_cwd(cwd)
-    contract.send_contract(settings, cid)
+    cid, c = contract.get_contracts(settings, cid_only=cid, slug=slug).popitem()
+    if c:
+        print(f"Sending contract {c['slug']} - {cid}")
+        contract.send_contract(settings, cid)
+    else:
+        print("Contract not found")
 
 
 cli = click.CommandCollection(sources=[cli1])

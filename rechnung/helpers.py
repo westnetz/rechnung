@@ -63,6 +63,7 @@ def generate_email(
         email.EmailMessage
 
     """
+    print("subject", mail_subject)
     msg = EmailMessage()
     msg["To"] = Header(mail_to, "utf-8")
     msg["Subject"] = mail_subject
