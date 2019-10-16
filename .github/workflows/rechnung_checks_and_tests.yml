@@ -28,7 +28,7 @@ jobs:
       run: |
         pip install black
         black .
-#    - name: Test with pytest
-#      run: |
-#        pip install pytest
-#        pytest
+    - name: Test with pytest
+      run: |
+        pip install pytest pytest-cov
+        make test

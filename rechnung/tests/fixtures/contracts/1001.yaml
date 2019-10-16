@@ -1,0 +1,15 @@
+address:
+- "Karl-Liebknecht-Platz 23"
+- 04223 Leipzig
+cid: '1001'
+dob: 1990-08-07
+start: 2030-06-01
+email: mike.murks@email.tld
+name: Mike Murks
+company: Murks GmbH
+notify: false
+phone: '+491234567890'
+items:
+  - description: A great product
+    price: 13.37
+    quantity: 1
