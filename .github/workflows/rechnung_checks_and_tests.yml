@@ -32,4 +32,3 @@ jobs:
       run: |
         pip install pytest pytest-cov
         make test
->>>>>>> add pytest to gh actions:.github/workflows/pythonapp.yml
