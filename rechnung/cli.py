@@ -1,5 +1,6 @@
 import click
 import os
+import arrow
 
 from .settings import get_settings_from_cwd, copy_assets, create_required_settings_file
 from .invoice import create_invoices, render_invoices, send_invoices
@@ -62,16 +63,21 @@ def print_stats():
     Print stats about the contracts
     """
     settings = get_settings_from_cwd(cwd)
-    contracts = get_contracts(settings).values()
-    print(f"{len(contracts)} contracts in total")
+    contracts = get_contracts(settings).items()
+    now = arrow.now()
+    contracts_totals = list()
+    for cid, data in contracts:
+        # fetch dates, if no end date is set or know, it will be set to 1 year in the future
+        start_date = arrow.get(data["start"])
+        end_date = arrow.get(data.get("end", now + arrow.arrow.relativedelta(years=1)))
+        if start_date > now or now > end_date:
+            continue
 
-    total_monthly = sum(
-        map(
-            lambda x: x[0].get("quantity", 1) * x[0]["price"],
-            list(map(lambda i: i["items"], contracts)),
+        contracts_totals.append(
+            sum(map(lambda i: i.get("quantity", i) * i["price"], data["items"]))
         )
-    )
-    print(f"{total_monthly:.2f}€ per month")
+    print(f"{len(contracts_totals)} active contracts of {len(contracts)} in total")
+    print(f"{sum(contracts_totals):.2f}€ per month")
 
 
 @cli1.command()
