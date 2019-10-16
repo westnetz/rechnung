@@ -1,9 +1,11 @@
+import arrow
 import click
 import os
-
-from .settings import get_settings_from_cwd, copy_assets, create_required_settings_file
 import rechnung.invoice as invoice
 import rechnung.contract as contract
+
+from .settings import get_settings_from_cwd, copy_assets, create_required_settings_file
+from .transactions import read_csv_files
 
 cwd = os.getcwd()
 
@@ -21,7 +23,7 @@ def init():
     """
     Create the directory structure in the current directory.
     """
-    print("Initializing...")
+    print(f"Initializing in {cwd}...")
 
     create_required_settings_file(cwd)
     settings = get_settings_from_cwd(cwd, create_non_existing_dirs=True)
@@ -59,21 +61,38 @@ def print_contracts():
 
 
 @cli1.command()
+@click.argument("year", type=int)
+@click.argument("month", type=int)
+def print_csv(year, month):
+    """
+    Parse CSV files for a specific year/month combo
+    """
+    settings = get_settings_from_cwd(cwd)
+    print(f"Parsing CSV files for {year}{month}")
+    for transaction in read_csv_files(settings, year, month):
+        print("{date}: {type[0]} {amount:>6}€ {sender}".format(**transaction))
+
+
+@cli1.command()
 def print_stats():
     """
     Print stats about the contracts
     """
     settings = get_settings_from_cwd(cwd)
-    contracts = contract.get_contracts(settings).values()
-    print(f"{len(contracts)} contracts in total")
-
-    total_monthly = sum(
-        map(
-            lambda x: x[0].get("quantity", 1) * x[0]["price"],
-            list(map(lambda i: i["items"], contracts)),
+    contracts = contract.get_contracts(settings).items()
+    now = arrow.now()
+    contracts_totals = list()
+    for cid, data in contracts:
+        # fetch dates, if no end date is set or know, it will be set to 1 year in the future
+        start_date = arrow.get(data["start"])
+        end_date = arrow.get(data.get("end", now + arrow.arrow.relativedelta(years=1)))
+        if start_date > now or now > end_date:
+            continue
+        contracts_totals.append(
+            sum(map(lambda i: i.get("quantity", i) * i["price"], data["items"]))
         )
-    )
-    print(f"{total_monthly:.2f}€ per month")
+    print(f"{len(contracts_totals)} active contracts of {len(contracts)} in total")
+    print(f"{sum(contracts_totals):.2f}€ per month")
 
 
 @cli1.command()

@@ -1,0 +1,50 @@
+# COMPANY SETTINGS
+
+company:
+    # post address
+    address:
+    - A great company
+    - Great Street 1.
+    - 01337 Internet
+    website: https://company.tld
+    email: mail@company.tld
+    hotline:
+    # bank connection
+    bank:
+    - IBAN
+    - BLC
+    - bank name
+
+# GENERAL SETTINGS
+
+# in percent
+vat: 19
+
+# The locale to be used
+locale: 'de_DE.UTF-8'
+
+# STRFTIME-Format String of the delivery date.
+delivery_date_format: "%d.%m.%Y"
+
+# EMAIL CONTENT SETTINGS
+
+# Subject for the invoice mails to be sent to the customers
+invoice_mail_subject: "Your invoice"
+
+# EMAIL SERVER SETTINGS
+
+# Sender which will appear in the "FROM" field in the email
+sender: A great company accounting <accounting@agreatcompany.tld>
+
+# Emailserver to be used
+server: mail.agreatcompany.tld
+
+# Username for the account which will be used to send emails
+username: 'accounting@agreatcompany.tld'
+
+# Password for the email account stated above
+password: 'password'
+
+insecure: True
+
+#policy_attachment_filename: test.pdf

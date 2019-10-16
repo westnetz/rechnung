@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="invoice.css" media="print" rel="stylesheet">
+    <title>Invoice {{ invoice.id }}</title>
+    <meta name="description" content="Invoice demo sample">
+    <meta name="author" content="Kozea">
+</head>
+
+<body>
+    <img src="file://{{ invoice.logo_path }}" id="logo" width="150" />
+    <aside>
+        <address id="from">
+            {{ invoice.company.address | join("<br />") }}
+        </address>
+
+        <address id="to">
+            {{ invoice.address | join("<br />") }}
+        </address>
+    </aside>
+
+    <dl id="informations">
+        <dt>Invoice number</dt>
+        <dd>{{ invoice.id }}</dd>
+        <dt>Date</dt>
+        <dd>{{ invoice.date }}</dd>
+        <dt>Period</dt>
+        <dd>{{ invoice.period }}</dd>
+    </dl>
+
+    <table>
+        <thead>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </thead>
+        <tbody>
+            {% for position in positions %}
+            <tr>
+                <td>{{ position.description }}</td>
+                <td>{{ position.price }}€</td>
+                <td>{{ position.quantity }}</td>
+                <td>{{ position.subtotal }}€</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table id="total">
+        <thead>
+            <th>Account number</th>
+            {% if invoice.vat > 0 %}
+            <th>Total w/o VAT</th>
+            <th>VAT ({{ invoice.vat }}%)</th>
+            {% endif %}
+            <th>Final total</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ invoice.cid }}</td>
+                {% if invoice.vat > 0 %}
+                <td>{{ invoice.total_net }}€</td>
+                <td>{{ invoice.total_vat }}€</td>
+                {% endif %}
+                <td>{{ invoice.total_gross }}€</td>
+        </tbody>
+    </table>
+    <footer>{{ invoice.company.bank | join(" | ") }}</footer>
+</body>
+
+</html>
