@@ -66,3 +66,13 @@ uninstall: ## Remove the currently installed version of rechnung
 
 .PHONY: reinstall
 reinstall: uninstall install 
+
+.PHONY: docs
+docs:
+	.PHONY: docs
+docs:
+	rm -f docs/rechnung.rst
+	rm -f docs/modules.rst
+	sphinx-apidoc -o docs rechnung
+	$(MAKE) -C docs clean
+	$(MAKE) -C docs html
