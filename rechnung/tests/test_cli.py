@@ -93,7 +93,7 @@ def test_invoice_create(cli_test_data_path):
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
-    result = runner.invoke(cli1, ["create", "2019", "10"])
+    result = runner.invoke(cli1, ["create-invoices", "2019", "10"])
     invoice_1000_path = path.joinpath(s.invoices_dir, "1000", "1000.2019.10.yaml")
     invoice_1002_path = path.joinpath(s.invoices_dir, "1002", "1002.2019.10.yaml")
     assert invoice_1000_path.is_file()
