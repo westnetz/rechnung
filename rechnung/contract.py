@@ -8,6 +8,11 @@ from .helpers import generate_pdf, get_template, generate_email, send_email
 
 
 def get_contracts(settings, year=None, month=None, cid_only=None, inactive=False):
+    """
+    Fetches all contracts from the settings.contracts_dir directory.
+    Returns a dict with all active contracts, i.e. contracts with started
+    in the past.
+    """
     contracts = OrderedDict()
     for filename in settings.contracts_dir.glob("*.yaml"):
         if cid_only and cid_only != filename.stem:
@@ -28,6 +33,9 @@ def get_contracts(settings, year=None, month=None, cid_only=None, inactive=False
 
 
 def render_contracts(settings):
+    """
+    Renders all contracts as pdfs to settings.contracts_dir
+    """
     template = get_template(settings.contract_template_file)
     logo_path = settings.assets_dir / "logo.png"
 
@@ -60,6 +68,12 @@ def render_contracts(settings):
 
 
 def send_contract(settings, cid):
+    """
+    Sends the contract specified with the cid via email to the customer.
+
+    If set, the policy and the product description of the main product 
+    will be attached.
+    """
     mail_template = get_template(settings.contract_mail_template_file)
     contract_pdf_path = Path(settings.contracts_dir) / f"{cid}.pdf"
     contract_yaml_filename = Path(settings.contracts_dir) / f"{cid}.yaml"

@@ -153,8 +153,9 @@ def test_invoice_create_cid_only(cli_test_data_path):
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
-    result = runner.invoke(cli1, ["create-invoices", "2019", "10", "--cid-only=1000",
-    "--force-recreate"])
+    result = runner.invoke(
+        cli1, ["create-invoices", "2019", "10", "--cid-only=1000", "--force-recreate"]
+    )
     assert "1002" not in result.output
     assert "already exists" not in result.output
 
