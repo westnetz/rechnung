@@ -136,15 +136,26 @@ def test_invoice_create_force(cli_test_data_path):
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
     result = runner.invoke(cli1, ["create-invoices", "2019", "10"])
-    expected_results = ["Ignoring 1001 with start 2030-06-01",
+    expected_results = [
+        "Ignoring 1001 with start 2030-06-01",
         "Creating invoice yaml 1000.2019.10",
         "invoices/1000/1000.2019.10.yaml already exists.",
         "Creating invoice yaml 1002.2019.10",
-        "invoices/1002/1002.2019.10.yaml already exists."
+        "invoices/1002/1002.2019.10.yaml already exists.",
     ]
     for expected_result in expected_results:
         assert expected_result in expected_results
     result = runner.invoke(cli1, ["create-invoices", "2019", "10", "--force-recreate"])
+    assert "already exists" not in result.output
+
+
+def test_invoice_create_cid_only(cli_test_data_path):
+    cli1, path = cli_test_data_path
+    s = settings.get_settings_from_cwd(path)
+    runner = CliRunner()
+    result = runner.invoke(cli1, ["create-invoices", "2019", "10", "--cid-only=1000",
+    "--force-recreate"])
+    assert "1002" not in result.output
     assert "already exists" not in result.output
 
 
