@@ -74,6 +74,11 @@ def test_init_files_directories(initialized_path):
 
 
 def test_print_stats(cli_test_data_path):
+    """
+    Test the print-stats function. 
+    It checks if the amount of active contracts and the total income per month is calculated
+    correctly.
+    """
     cli1, path = cli_test_data_path
     runner = CliRunner()
     result = runner.invoke(cli1, ["print-stats"])
@@ -81,19 +86,29 @@ def test_print_stats(cli_test_data_path):
 
 
 def test_print_contracts(cli_test_data_path):
+    """
+    Tests the print-contracts function.
+    Tests is the names, total amounts are given correctly.
+    """
     cli1, path = cli_test_data_path
     runner = CliRunner()
     result = runner.invoke(cli1, ["print-contracts"])
     assert (
         result.output
-        == "1000: martha.muster@email.tld 2019-06-01 60.21€\n1001: mike.murks@email.tld 2030-06-01 13.37€\n1002: frank.nord@email.tld 2019-06-01 48.45€\n"
+        == "1000: Martha Muster 2019-06-01 60.21€\n1001: Murks GmbH, Mike Murks 2030-06-01 13.37€\n1002: Frank Nord 2019-06-01 48.45€\n"
     )
 
+
 def test_invoice_create(cli_test_data_path):
+    """
+    Tests if the create-invoices function works properly.
+    It checks for existence and absence of the expected files as well as the correct
+    total_gross, total_net and total_vat amounts.
+    """
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
-    result = runner.invoke(cli1, ["create", "2019", "10"])
+    result = runner.invoke(cli1, ["create-invoices", "2019", "10"])
     invoice_1000_path = path.joinpath(s.invoices_dir, "1000", "1000.2019.10.yaml")
     invoice_1002_path = path.joinpath(s.invoices_dir, "1002", "1002.2019.10.yaml")
     assert invoice_1000_path.is_file()
@@ -111,12 +126,49 @@ def test_invoice_create(cli_test_data_path):
         assert invoice_data["total_vat"] == 7.74
         assert invoice_data["total_gross"] == 48.45
 
-def test_invoice_render(cli_test_data_path):
+
+def test_invoice_create_force(cli_test_data_path):
+    """
+    Tests if the --force-recreate function of the create-invoices command works as expected.
+    I.e. invoices are not overwritten if the force option is not given.
+    """
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
-    result = runner.invoke(cli1, ["render"])
+    result = runner.invoke(cli1, ["create-invoices", "2019", "10"])
+    expected_results = [
+        "Ignoring 1001 with start 2030-06-01",
+        "Creating invoice yaml 1000.2019.10",
+        "invoices/1000/1000.2019.10.yaml already exists.",
+        "Creating invoice yaml 1002.2019.10",
+        "invoices/1002/1002.2019.10.yaml already exists.",
+    ]
+    for expected_result in expected_results:
+        assert expected_result in expected_results
+    result = runner.invoke(cli1, ["create-invoices", "2019", "10", "--force-recreate"])
+    assert "already exists" not in result.output
+
+
+def test_invoice_create_cid_only(cli_test_data_path):
+    cli1, path = cli_test_data_path
+    s = settings.get_settings_from_cwd(path)
+    runner = CliRunner()
+    result = runner.invoke(cli1, ["create-invoices", "2019", "10", "--cid-only=1000",
+    "--force-recreate"])
+    assert "1002" not in result.output
+    assert "already exists" not in result.output
+
+
+def test_invoice_render(cli_test_data_path):
+    """
+    Tests if the render-all function results in the correct invoices being created.
+    As pdf testing is difficult it only checks for existence of the pdfs, assuming
+    that the render process worked as expected.
+    """
+    cli1, path = cli_test_data_path
+    s = settings.get_settings_from_cwd(path)
+    runner = CliRunner()
+    result = runner.invoke(cli1, ["render-all"])
     assert path.joinpath(s.invoices_dir, "1000", "1000.2019.10.pdf").is_file()
     assert not path.joinpath(s.invoices_dir, "1001", "1001.2019.10.pdf").is_file()
     assert path.joinpath(s.invoices_dir, "1002", "1002.2019.10.pdf").is_file()
-
