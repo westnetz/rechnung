@@ -52,10 +52,18 @@ Settings = namedtuple("Settings", required_settings + list(optional_settings.key
 
 
 class UnknownSettingError(Exception):
+    """
+    If a setting is found in the settings.yaml file which is unknown to rechnung, this exception is thrown.
+    """
+
     pass
 
 
 class RequiredSettingMissingError(Exception):
+    """
+    If a setting is missing, but required to be set in the settings.yaml, this exception is thrown.
+    """
+
     pass
 
 

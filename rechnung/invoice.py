@@ -7,6 +7,10 @@ from .helpers import generate_pdf, get_template, generate_email, send_email
 
 
 def fill_invoice_items(settings, items):
+    """
+    Calculates the items which will appear on the invoice, as well as the total_gross,
+    total_net and total_vat value.
+    """
     invoice_total_net = float()
     invoice_total_vat = float()
     invoice_total_gross = float()
@@ -36,6 +40,13 @@ def fill_invoice_items(settings, items):
 
 
 def generate_invoice(settings, contract, year, month):
+    """
+    Creates an invoice, i.e. calls the fill_invoice_items function, to get
+    all the numbers right, as well as filling all the remaining required meta
+    information about the customer.
+
+    It returns the invoice dict.
+    """
     invoice_items, net, vat, gross = fill_invoice_items(settings, contract["items"])
 
     invoice_data = {}
@@ -68,6 +79,9 @@ def iterate_invoices(settings):
 
 
 def render_invoices(settings):
+    """
+    Renders all invoices and saves pdfs to settings.invoices_dir.
+    """
     template = get_template(settings.invoice_template_file)
 
     for contract_invoice_dir, filename in iterate_invoices(settings):
@@ -98,6 +112,9 @@ def render_invoices(settings):
 
 
 def save_invoice_yaml(settings, invoice_data, force=False):
+    """
+    Saves the invoice_data to a yaml file in settings.invoices_dir.
+    """
     invoice_contract_dir = settings.invoices_dir / invoice_data["cid"]
 
     if not invoice_contract_dir.is_dir():
@@ -112,6 +129,9 @@ def save_invoice_yaml(settings, invoice_data, force=False):
 
 
 def create_invoices(settings, year, month, cid_only=None, force=False):
+    """
+    Bulk creates invoice yaml files for a specific month-year-combination.
+    """
     if force:
         print("Force create enabled")
 
@@ -126,6 +146,9 @@ def create_invoices(settings, year, month, cid_only=None, force=False):
 
 
 def send_invoices(settings, year, month, cid_only, force):
+    """
+    Sends emails with the invoices as attachment.
+    """
     mail_template = get_template(settings.invoice_mail_template_file)
 
     if force:
