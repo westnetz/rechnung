@@ -47,6 +47,16 @@ master_doc = 'index'
 #
 html_theme = 'alabaster'
 
+html_theme_options = {
+    "font_family": '"Avenir Next", Calibri, "PT Sans", sans-serif',
+    "head_font_family": '"Avenir Next", Calibri, "PT Sans", sans-serif',
+    "font_size": "14px",
+    "page_width": "980px",
+    "sidebar_width": "225px",
+    "show_relbars": True
+}
+
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
