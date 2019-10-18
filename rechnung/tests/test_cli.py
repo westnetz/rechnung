@@ -89,6 +89,7 @@ def test_print_contracts(cli_test_data_path):
         == "1000: Martha Muster 2019-06-01 60.21€\n1001: Murks GmbH, Mike Murks 2030-06-01 13.37€\n1002: Frank Nord 2019-06-01 48.45€\n"
     )
 
+
 def test_invoice_create(cli_test_data_path):
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
@@ -111,6 +112,24 @@ def test_invoice_create(cli_test_data_path):
         assert invoice_data["total_vat"] == 7.74
         assert invoice_data["total_gross"] == 48.45
 
+
+def test_invoice_create_force(cli_test_data_path):
+    cli1, path = cli_test_data_path
+    s = settings.get_settings_from_cwd(path)
+    runner = CliRunner()
+    result = runner.invoke(cli1, ["create-invoices", "2019", "10"])
+    expected_results = ["Ignoring 1001 with start 2030-06-01",
+        "Creating invoice yaml 1000.2019.10",
+        "invoices/1000/1000.2019.10.yaml already exists.",
+        "Creating invoice yaml 1002.2019.10",
+        "invoices/1002/1002.2019.10.yaml already exists."
+    ]
+    for expected_result in expected_results:
+        assert expected_result in expected_results
+    result = runner.invoke(cli1, ["create-invoices", "2019", "10", "--force-recreate"])
+    assert "already exists" not in result.output
+
+
 def test_invoice_render(cli_test_data_path):
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
@@ -119,4 +138,3 @@ def test_invoice_render(cli_test_data_path):
     assert path.joinpath(s.invoices_dir, "1000", "1000.2019.10.pdf").is_file()
     assert not path.joinpath(s.invoices_dir, "1001", "1001.2019.10.pdf").is_file()
     assert path.joinpath(s.invoices_dir, "1002", "1002.2019.10.pdf").is_file()
-
