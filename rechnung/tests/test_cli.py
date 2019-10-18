@@ -74,6 +74,11 @@ def test_init_files_directories(initialized_path):
 
 
 def test_print_stats(cli_test_data_path):
+    """
+    Test the print-stats function. 
+    It checks if the amount of active contracts and the total income per month is calculated
+    correctly.
+    """
     cli1, path = cli_test_data_path
     runner = CliRunner()
     result = runner.invoke(cli1, ["print-stats"])
@@ -81,6 +86,10 @@ def test_print_stats(cli_test_data_path):
 
 
 def test_print_contracts(cli_test_data_path):
+    """
+    Tests the print-contracts function.
+    Tests is the names, total amounts are given correctly.
+    """
     cli1, path = cli_test_data_path
     runner = CliRunner()
     result = runner.invoke(cli1, ["print-contracts"])
@@ -91,6 +100,11 @@ def test_print_contracts(cli_test_data_path):
 
 
 def test_invoice_create(cli_test_data_path):
+    """
+    Tests if the create-invoices function works properly.
+    It checks for existence and absence of the expected files as well as the correct
+    total_gross, total_net and total_vat amounts.
+    """
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
@@ -114,6 +128,10 @@ def test_invoice_create(cli_test_data_path):
 
 
 def test_invoice_create_force(cli_test_data_path):
+    """
+    Tests if the --force-recreate function of the create-invoices command works as expected.
+    I.e. invoices are not overwritten if the force option is not given.
+    """
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
@@ -131,6 +149,11 @@ def test_invoice_create_force(cli_test_data_path):
 
 
 def test_invoice_render(cli_test_data_path):
+    """
+    Tests if the render-all function results in the correct invoices being created.
+    As pdf testing is difficult it only checks for existence of the pdfs, assuming
+    that the render process worked as expected.
+    """
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
