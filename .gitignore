@@ -9,3 +9,4 @@ share/
 ./contracts/
 ./invoices/
 ./settings.yaml
+docs/_build/*
