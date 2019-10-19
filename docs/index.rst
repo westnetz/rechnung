@@ -20,7 +20,8 @@ Getting started
    :caption: Contents:
 
    design
-   readme
+   installation
+   quickstart
    modules
 
 * :ref:`genindex`

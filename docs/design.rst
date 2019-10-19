@@ -1,5 +1,5 @@
-rechnung - design document
-==========================
+Design
+======
 
 This document describes the design thoughts and specification of *rechnung* - a command line based contract and invoice management. 
 
