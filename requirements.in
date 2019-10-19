@@ -3,3 +3,4 @@ Click==7.0
 Jinja2==2.10.3
 PyYAML==5.1
 WeasyPrint==47
+peewee==3.11.2
