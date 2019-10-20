@@ -115,6 +115,7 @@ def import_bank_statement_from_file(bank_statement_file, settings):
         outfile.write(e.to_yaml())
     return outfilename
 
+
 def report_customer(cid, settings):
     payments = Entries.from_yaml(settings.payments_dir.iterdir())
     invoices = get_invoices(cid, settings)
@@ -123,7 +124,7 @@ def report_customer(cid, settings):
     print("\nInvoices:")
     for i in invoices:
         print(f"{i['date']}\t-{i['total_gross']}")
-        total -= Decimal(i['total_gross'])
+        total -= Decimal(i["total_gross"])
 
     print("\nPayments:")
     for p in payments.entries:
@@ -132,7 +133,7 @@ def report_customer(cid, settings):
         print(f"{p.date.format('DD.MM.YYYY')}\t{p.amount}")
         total += p.amount
 
-    total= total.quantize(Decimal(settings.decimal_quantization))
+    total = total.quantize(Decimal(settings.decimal_quantization))
     print("-".join(["" for i in range(20)]))
     print(f"Balance: {total}")
     print("=".join(["" for i in range(20)]))

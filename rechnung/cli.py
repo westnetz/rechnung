@@ -141,7 +141,7 @@ def send_contract(cid):
 @click.argument("bank_statement_file", type=click.Path(exists=True))
 def import_bank_statement(bank_statement_file):
     """
-    Import a bank statement to be annotated with cids 
+    Import a bank statement to be annotated with cids
     and used in reports.
     """
     print(f"Importing bank statement {bank_statement_file}...")
@@ -159,6 +159,7 @@ def report(cid):
     print(f"Reporting customer {cid}...")
     settings = get_settings_from_cwd(cwd)
     payment.report_customer(cid, settings)
+
 
 cli = click.CommandCollection(sources=[cli1])
 
