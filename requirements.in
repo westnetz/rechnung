@@ -1,6 +1,6 @@
-arrow==0.13.1
+arrow==0.15.2
 Click==7.0
 Jinja2==2.10.3
-PyYAML==5.1
-WeasyPrint==47
+PyYAML==5.1.2
+WeasyPrint==50
 peewee==3.11.2

@@ -4,7 +4,7 @@
 #
 #    make update-requirements
 #
-arrow==0.13.1
+arrow==0.15.2
 cairocffi==1.1.0          # via cairosvg, weasyprint
 cairosvg==2.4.2           # via weasyprint
 cffi==1.13.0              # via cairocffi, weasyprint
@@ -19,10 +19,10 @@ pillow==6.2.0             # via cairosvg
 pycparser==2.19           # via cffi
 pyphen==0.9.5             # via weasyprint
 python-dateutil==2.8.0    # via arrow
-pyyaml==5.1
+pyyaml==5.1.2
 six==1.12.0               # via html5lib, python-dateutil
 tinycss2==1.0.2           # via cairosvg, cssselect2, weasyprint
-weasyprint==47
+weasyprint==50
 webencodings==0.5.1       # via html5lib, tinycss2
 
 # The following packages are considered to be unsafe in a requirements file:
