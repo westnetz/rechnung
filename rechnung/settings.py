@@ -45,6 +45,9 @@ optional_settings = {
     "invoices_dir": "invoices",
     "logo_asset_file": "logo.svg",
     "policy_attachment_asset_file": "policy.pdf",
+    "bank_statements_dir": "bank_statements",
+    "payments_dir": "payments",
+    "decimal_quantization": ".01",
 }
 possible_settings = set(required_settings + list(optional_settings.keys()))
 

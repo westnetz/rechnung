@@ -173,3 +173,25 @@ def test_invoice_render(cli_test_data_path):
     assert path.joinpath(s.invoices_dir, "1000", "1000.2019.10.pdf").is_file()
     assert not path.joinpath(s.invoices_dir, "1001", "1001.2019.10.pdf").is_file()
     assert path.joinpath(s.invoices_dir, "1002", "1002.2019.10.pdf").is_file()
+
+
+def test_postbank_statement_import(shared_datadir):
+    cli.cwd = shared_datadir
+    s = settings.get_settings_from_cwd(shared_datadir)
+    runner = CliRunner()
+    result = runner.invoke(
+        cli.cli1,
+        [
+            "import-bank-statement",
+            str(shared_datadir / "bank_statements" / "postbank.csv"),
+        ],
+    )
+    assert result.exit_code == 0
+    assert result.output.startswith("Importing bank statement")
+    payment_filename = result.output.split("\n")[1].split()[2]
+    with open(payment_filename) as payment_file:
+        payment_data = yaml.load(payment_file)
+    with open(s.payments_dir / "postbank.yaml") as payment_master:
+        master_data = yaml.load(payment_master)
+    for i, j in zip(payment_data, master_data):
+        assert i == j
