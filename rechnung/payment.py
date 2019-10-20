@@ -86,6 +86,19 @@ class Entries:
                 entries.append(parser.get_entry(row))
         return cls(entries)
 
+    @classmethod
+    def from_yaml(cls, yaml_files):
+        if isinstance(yaml_files, Path):
+            yaml_files = [yaml_files]
+
+        entries = []
+        for yaml_file in yaml_files:
+            with open(yaml_file) as infile:
+                data = yaml.load(infile, Loader=yaml.FullLoader)
+                for entry in data:
+                    entries.append(Entry(**entry))
+        return cls(entries)
+
     def to_yaml(self):
         return yaml.dump(list(map(asdict, self.entries)))
 
@@ -101,3 +114,34 @@ def import_bank_statement_from_file(bank_statement_file, settings):
     with open(outfilename, "w") as outfile:
         outfile.write(e.to_yaml())
     return outfilename
+
+def report_customer(cid, settings):
+    payments = Entries.from_yaml(settings.payments_dir.iterdir())
+    invoices = get_invoices(cid, settings)
+    total = Decimal(0)
+
+    print("\nInvoices:")
+    for i in invoices:
+        print(f"{i['date']}\t-{i['total_gross']}")
+        total -= Decimal(i['total_gross'])
+
+    print("\nPayments:")
+    for p in payments.entries:
+        if p.cid != cid:
+            continue
+        print(f"{p.date.format('DD.MM.YYYY')}\t{p.amount}")
+        total += p.amount
+
+    total= total.quantize(Decimal(settings.decimal_quantization))
+    print("-".join(["" for i in range(20)]))
+    print(f"Balance: {total}")
+    print("=".join(["" for i in range(20)]))
+
+
+def get_invoices(cid, settings):
+    invoices_dir = settings.invoices_dir / cid
+    invoices = []
+    for invoice in invoices_dir.glob("*.yaml"):
+        with open(invoice) as i_file:
+            invoices.append(yaml.safe_load(i_file))
+    return invoices
