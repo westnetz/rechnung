@@ -11,8 +11,10 @@ check: bandit black-check pip-check test ## Run all checks
 bandit: ## Run bandit
 	python -m bandit -r rechnung
 
-.PHONY: black-check
-black-check: ## Check code formatting
+.PHONY: style-check
+style-check: ## Check code formatting
+	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+	flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
 	python -m black --check rechnung
 
 .PHONY: black
