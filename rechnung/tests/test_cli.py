@@ -75,7 +75,7 @@ def test_init_files_directories(initialized_path):
 
 def test_print_stats(cli_test_data_path):
     """
-    Test the print-stats function. 
+    Test the print-stats function.
     It checks if the amount of active contracts and the total income per month is calculated
     correctly.
     """
