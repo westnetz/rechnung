@@ -5,7 +5,7 @@ import locale
 import yaml
 
 from dataclasses import dataclass, asdict
-from decimal import *
+from decimal import Decimal
 from pathlib import Path
 
 
