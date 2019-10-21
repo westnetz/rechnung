@@ -176,16 +176,12 @@ def test_invoice_render(cli_test_data_path):
     assert path.joinpath(s.invoices_dir, "1002", "1002.2019.10.pdf").is_file()
 
 
-def test_postbank_statement_import(shared_datadir):
-    cli.cwd = shared_datadir
-    s = settings.get_settings_from_cwd(shared_datadir)
+def test_postbank_statement_import(cli_test_data_path):
+    cli1, path = cli_test_data_path
+    s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
     result = runner.invoke(
-        cli.cli1,
-        [
-            "import-bank-statement",
-            str(shared_datadir / "bank_statements" / "postbank.csv"),
-        ],
+        cli1, ["import-bank-statement", str(path / "bank_statements" / "postbank.csv")]
     )
     assert result.exit_code == 0
     assert result.output.startswith("Importing bank statement")
