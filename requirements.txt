@@ -7,7 +7,7 @@
 arrow==0.15.2
 cairocffi==1.1.0          # via cairosvg, weasyprint
 cairosvg==2.4.2           # via weasyprint
-cffi==1.13.0              # via cairocffi, weasyprint
+cffi==1.13.1              # via cairocffi, weasyprint
 click==7.0
 cssselect2==0.2.2         # via cairosvg, weasyprint
 defusedxml==0.6.0         # via cairosvg

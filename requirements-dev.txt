@@ -11,15 +11,18 @@ attrs==19.3.0             # via black, pytest
 black==19.3b0
 cairocffi==1.1.0
 cairosvg==2.4.2
-cffi==1.13.0
+cffi==1.13.1
 click==7.0
 coverage==4.5.4           # via pytest-cov
 cssselect2==0.2.2
 defusedxml==0.6.0
+entrypoints==0.3          # via flake8
+flake8==3.7.8
 html5lib==1.0.1
 importlib-metadata==0.23  # via pluggy, pytest
 jinja2==2.10.3
 markupsafe==1.1.1
+mccabe==0.6.1             # via flake8
 more-itertools==7.2.0     # via pytest, zipp
 packaging==19.2           # via pytest
 peewee==3.11.2
@@ -27,7 +30,9 @@ pillow==6.2.0
 pip-tools==3.6.0
 pluggy==0.13.0            # via pytest
 py==1.8.0                 # via pytest
+pycodestyle==2.5.0        # via flake8
 pycparser==2.19
+pyflakes==2.1.1           # via flake8
 pyparsing==2.4.2          # via packaging
 pyphen==0.9.5
 pytest-cov==2.8.1
