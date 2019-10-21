@@ -183,6 +183,8 @@ def test_postbank_statement_import(cli_test_data_path):
     result = runner.invoke(
         cli1, ["import-bank-statement", str(path / "bank_statements" / "postbank.csv")]
     )
+    print(result.output)
+    print(result.exit_code)
     assert result.exit_code == 0
     assert result.output.startswith("Importing bank statement")
     payment_filename = result.output.split("\n")[1].split()[2]
