@@ -19,14 +19,14 @@ defusedxml==0.6.0
 html5lib==1.0.1
 jinja2==2.10.3
 markupsafe==1.1.1
-more-itertools==7.2.0     # via pytest
+more-itertools==8.0.1     # via pytest
 packaging==19.2           # via pytest
 pillow==6.2.1
 pip-tools==3.6.0
-pluggy==0.13.0            # via pytest
+pluggy==0.13.1            # via pytest
 py==1.8.0                 # via pytest
 pycparser==2.19
-pyparsing==2.4.4          # via packaging
+pyparsing==2.4.5          # via packaging
 pyphen==0.9.5
 pytest-cov==2.8.1
 pytest==5.2.1
@@ -40,4 +40,4 @@ weasyprint==47
 webencodings==0.5.1
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.6.0        # via cairocffi, tinycss2, weasyprint
+# setuptools==42.0.2        # via cairocffi, tinycss2, weasyprint
