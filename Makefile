@@ -69,8 +69,6 @@ reinstall: uninstall install
 
 .PHONY: docs
 docs:
-	.PHONY: docs
-docs:
 	rm -f docs/rechnung.rst
 	rm -f docs/modules.rst
 	sphinx-apidoc -o docs rechnung
