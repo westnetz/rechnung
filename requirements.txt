@@ -25,4 +25,4 @@ weasyprint==47
 webencodings==0.5.1       # via html5lib, tinycss2
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.6.0        # via cairocffi, tinycss2, weasyprint
+# setuptools==42.0.2        # via cairocffi, tinycss2, weasyprint
