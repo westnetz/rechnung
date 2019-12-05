@@ -1,3 +1,4 @@
+import arrow
 import datetime
 import locale
 import yaml
@@ -143,6 +144,78 @@ def create_invoices(settings, year, month, cid_only=None, force=False):
         print(f"Creating invoice yaml {cid}.{year}.{month}")
         invoice_data = generate_invoice(settings, contract, year, month)
         save_invoice_yaml(settings, invoice_data, force)
+
+
+def save_invoice_yaml(settings, invoice_data, force=False):
+    """
+    Saves the invoice_data to a yaml file in settings.invoices_dir.
+    """
+    invoice_contract_dir = settings.invoices_dir / invoice_data["cid"]
+
+    if not invoice_contract_dir.is_dir():
+        invoice_contract_dir.mkdir()
+
+    invoice_path = invoice_contract_dir / f"{invoice_data['id']}.yaml"
+    if not invoice_path.is_file() or force:
+        with open(invoice_path, "w") as invoice_fp:
+            invoice_fp.write(yaml.dump(invoice_data, default_flow_style=False))
+    else:
+        print(f"Invoice {invoice_path} already exists.")
+
+
+def save_billed_items_yaml(settings, billed_items, cid):
+    """
+    Saves the billed items to the billed items file of the customer 
+    """
+    billed_items_path = settings.billed_items_dir / f"{cid}.yaml"
+    with open(billed_items_path, "w") as outfile:
+        yaml.dump(billed_items, outfile)
+
+
+def get_billed_items(settings, cid):
+    billed_items_path = settings.billed_items_dir / f"{cid}.yaml"
+
+    if not billed_items_path.is_file():
+        return []
+    else:
+        with open(billed_items_path) as infile:
+            return yaml.safe_load(infile)
+
+
+def bill_cid_items(settings, contract, year, month):
+    billed_item_key = f"{year}-{month}"
+    month_name = arrow.get(billed_item_key).format("MMMM", locale=settings.arrow_locale)
+    billed_items = get_billed_items(settings, contract["cid"])
+    if any(item["key"] == billed_item_key for item in billed_items):
+        print(f"{billed_item_key} already billed for {contract['cid']}")
+    else:
+        for item in contract["items"]:
+            billed_item = {
+                "description": f"{item['description']} {month_name} {year}",
+                "price": item["price"],
+                "quantity": item["quantity"],
+                "subtotal": item["price"] * item["quantity"],
+                "key": billed_item_key,
+                "invoice": None,
+            }
+            billed_items.append(billed_item)
+    return billed_items
+
+
+def bill_items(settings, year, month, cid_only=None, dry=False):
+    """
+    Bill all products for all customers (or just one) i.e. mark them to be included 
+    in the next invoice to be created.
+    """
+    if cid_only:
+        print(f"Only creating to {cid_only}")
+
+    contracts = get_contracts(settings, year, month, cid_only)
+    for cid, contract in contracts.items():
+        print(f"Billing items for {cid}.")
+        billed_items = bill_cid_items(settings, contract, year, month)
+        if not dry:
+            save_billed_items_yaml(settings, billed_items, cid)
 
 
 def send_invoices(settings, year, month, cid_only, force):

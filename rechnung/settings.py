@@ -45,6 +45,8 @@ optional_settings = {
     "invoices_dir": "invoices",
     "logo_asset_file": "logo.svg",
     "policy_attachment_asset_file": "policy.pdf",
+    "billed_items_dir": "billed_items",
+    "arrow_locale": "de",
 }
 possible_settings = set(required_settings + list(optional_settings.keys()))
 
