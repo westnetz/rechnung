@@ -52,6 +52,19 @@ def bill_items(year, month, cid_only, dry):
 
 
 @cli1.command()
+@click.argument("suffix")
+@click.option("-c", "--cid-only")
+@click.option("-f", "--force-recreate", "force", is_flag=True)
+def create_billed_invoices(suffix, cid_only=None, force=False):
+    """
+    Mass create invoices from billed items.
+    """
+    print("Creating billed invoices...")
+    settings = get_settings_from_cwd(cwd)
+    invoice.create_billed_invoices(settings, suffix, cid_only, force)
+
+
+@cli1.command()
 @click.argument("year", type=int)
 @click.argument("month", type=int)
 @click.option("-c", "--cid-only")

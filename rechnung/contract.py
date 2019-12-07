@@ -60,7 +60,7 @@ def render_contracts(settings):
                 except ValueError:
                     pass
 
-            contract_html = template.render(contract=contract_data)
+            contract_html = template.render(**contract_data)
 
             generate_pdf(
                 contract_html, settings.contract_css_asset_file, contract_pdf_filename
