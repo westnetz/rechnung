@@ -1,3 +1,4 @@
+import arrow
 import datetime
 import locale
 import yaml
@@ -22,10 +23,15 @@ def get_contracts(settings, year=None, month=None, cid_only=None, inactive=False
             contract = yaml.safe_load(contract_file)
 
         if year and month:
-            if contract["start"] < datetime.date(year, month, 1):
-                contracts[contract["cid"]] = contract
-            else:
+            requested_date = arrow.get(f"{year}-{month}")
+            if "end" in contract.keys():
+                if arrow.get(contract["end"]) < requested_date:
+                    print(f"Ignoring {contract['cid']} with end {contract['end']}")
+                    continue
+            if arrow.get(contract["start"]) > requested_date:
                 print(f"Ignoring {contract['cid']} with start {contract['start']}")
+                continue
+            contracts[contract["cid"]] = contract
         else:
             contracts[contract["cid"]] = contract
 
