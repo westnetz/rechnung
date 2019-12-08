@@ -162,12 +162,13 @@ def save_invoice_yaml(settings, invoice_data, force=False):
     else:
         print(f"Invoice {invoice_path} already exists.")
 
+
 class NoUnbilledItemsFound(Exception):
     pass
 
 
 def get_period_from_item_keys(item_keys):
-    item_dates = [ arrow.get(key) for key in item_keys ]
+    item_dates = [arrow.get(key) for key in item_keys]
     start = sorted(map(lambda x: x.floor("month"), item_dates))[0]
     end = sorted(map(lambda x: x.ceil("month"), item_dates))[-1]
     return (start, end)
@@ -180,7 +181,7 @@ def generate_billed_invoice(settings, contract, suffix):
 
     It returns the invoice dict.
     """
-    billed_items = get_billed_items(settings, contract['cid'])
+    billed_items = get_billed_items(settings, contract["cid"])
     invoice_date = arrow.now().format("D.M.YYYY", locale=settings.arrow_locale)
     invoice_id = f"{contract['cid']}.{suffix}"
 
@@ -191,38 +192,37 @@ def generate_billed_invoice(settings, contract, suffix):
     invoice_items = []
     item_keys = []
     for billed_item in billed_items:
-        if not billed_item['invoice']:
-           invoice_items.append({
-                "item": len(invoice_items) + 1,
-                "description": billed_item["description"],
-                "price": billed_item["price"],
-                "quantity": billed_item["quantity"],
-                "subtotal": billed_item["subtotal"],
-            })
-        item_keys.append(billed_item['key'])
-        billed_item['invoice'] = invoice_id
+        if not billed_item["invoice"]:
+            invoice_items.append(
+                {
+                    "item": len(invoice_items) + 1,
+                    "description": billed_item["description"],
+                    "price": billed_item["price"],
+                    "quantity": billed_item["quantity"],
+                    "subtotal": billed_item["subtotal"],
+                }
+            )
+        item_keys.append(billed_item["key"])
+        billed_item["invoice"] = invoice_id
         gross += billed_item["subtotal"]
 
     net = round(gross / (1.0 + settings.vat / 100.0), 2)
     vat = round(gross - net, 2)
 
-    # If there are no unbilled items, an exception is raised, to be cought 
+    # If there are no unbilled items, an exception is raised, to be cought
     # in the caller function
     if not len(invoice_items):
         raise NoUnbilledItemsFound
 
     invoice_period = get_period_from_item_keys(item_keys)
     invoice_period_string = "{} - {}".format(
-        invoice_period[0].format("D.M.YYYY"),
-        invoice_period[1].format("D.M.YYYY")
+        invoice_period[0].format("D.M.YYYY"), invoice_period[1].format("D.M.YYYY")
     )
 
     invoice_data = {}
     invoice_data["address"] = contract.get("address", ["", "", ""])
     invoice_data["cid"] = contract["cid"]
-    invoice_data["date"] = arrow.now().strftime(
-        settings.delivery_date_format
-    )
+    invoice_data["date"] = arrow.now().strftime(settings.delivery_date_format)
     invoice_data["email"] = contract["email"]
     invoice_data["id"] = invoice_id
     invoice_data["items"] = invoice_items
@@ -232,11 +232,11 @@ def generate_billed_invoice(settings, contract, suffix):
     invoice_data["total_vat"] = vat
     invoice_data["vat"] = settings.vat
 
-    # We have to save the billed items, as we added the invoice number, 
+    # We have to save the billed items, as we added the invoice number,
     # s.t. these items will not be billed again.
-    # We do this as the last step, so we can be sure the rest of the 
+    # We do this as the last step, so we can be sure the rest of the
     # invoice creation worked
-    save_billed_items_yaml(settings, billed_items, contract['cid'])
+    save_billed_items_yaml(settings, billed_items, contract["cid"])
 
     return invoice_data
 
