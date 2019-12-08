@@ -3,6 +3,7 @@ from pathlib import Path
 from collections import namedtuple
 from copy import deepcopy
 from shutil import copy2
+import locale
 
 # File where user settings are read from
 SETTINGS_FILE = "settings.yaml"
@@ -142,6 +143,8 @@ def get_settings_from_file(
                 if create_non_existing_dirs and s_key.endswith("_dir"):
                     if not s_value.is_dir():
                         s_value.mkdir()
+
+        locale.setlocale(locale.LC_ALL, settings_data["locale"])
 
         return Settings(**settings_data)
 
