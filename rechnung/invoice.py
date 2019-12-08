@@ -325,9 +325,11 @@ def bill_items(settings, year, month, cid_only=None, dry=False):
             save_billed_items_yaml(settings, billed_items, cid)
 
 
-def send_invoices(settings, year, month, cid_only, force):
+def send_invoices(settings, year, month, cid_only, force, suffix=None):
     """
     Sends emails with the invoices as attachment.
+    
+    For backwards compatibility: year and month are ignored, if suffix is given!
     """
     mail_template = get_template(settings.invoice_mail_template_file)
 
@@ -343,7 +345,10 @@ def send_invoices(settings, year, month, cid_only, force):
         customer_invoice_dir = settings.invoices_dir / d
         if customer_invoice_dir.iterdir():
             for filename in customer_invoice_dir.glob("*.yaml"):
-                if not filename.name.endswith(f"{year}.{month:02}.yaml"):
+                if suffix:
+                    if not filename.name.endswith(f"{suffix}.yaml"):
+                        continue
+                elif not filename.name.endswith(f"{year}.{month:02}.yaml"):
                     continue
 
                 with open(customer_invoice_dir / filename) as yaml_file:

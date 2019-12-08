@@ -156,6 +156,19 @@ def send_invoices(year, month, cid_only=None, force=False):
     settings = get_settings_from_cwd(cwd)
     invoice.send_invoices(settings, year, month, cid_only, force)
 
+@cli1.command()
+@click.argument("suffix")
+@click.option("-c", "--cid_only")
+@click.option("-f", "--force-resend", "force", is_flag=True)
+def send_invoices_suffix(suffix, cid_only=None, force=False):
+    """
+    Send invoices by email (selected by suffix instead of year and month).
+    """
+    print(f"Sending invoices for {suffix}")
+    settings = get_settings_from_cwd(cwd)
+    invoice.send_invoices(settings, None, None, cid_only, force, suffix)
+
+
 
 @cli1.command()
 @click.argument("cid", type=int)
