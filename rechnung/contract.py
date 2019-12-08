@@ -54,17 +54,17 @@ def render_contracts(settings):
             print("Rendering contract pdf for {}".format(contract_data["cid"]))
             contract_data["logo_path"] = logo_path
 
-            for item in contract_data["items"]:
-                for element in ["price", "initial_cost"]:
-                    item[element] = locale.format_string("%.2f", item.get(element, 0))
+            price_total = locale.format_string(
+                "%.2f", sum([item["price"] for item in contract_data["items"]])
+            )
+            initial_total = locale.format_string(
+                "%.2f", sum([item["initial"] for item in contract_data["items"]])
+            )
 
-            if contract_data["start"]:
-                try:
-                    contract_data["start"] = contract_data["start"].strftime(
-                        "%-d. %B %Y"
-                    )
-                except ValueError:
-                    pass
+            if "start" in contract_data.keys():
+                contract_data["start"] = arrow.get(contract_data["start"]).format(
+                    "DD.MM.YYYY", locale=settings.arrow_locale
+                )
 
             contract_html = template.render(**contract_data)
 
