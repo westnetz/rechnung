@@ -97,7 +97,7 @@ def generate_pdf(html_data, css_data, path):
     """
     font_config = FontConfiguration()
     html = HTML(string=html_data)
-    css = CSS(css_data)
+    css = CSS(css_data, font_config=font_config)
     html.write_pdf(
         path, stylesheets=[css], font_config=font_config, presentational_hints=True
     )
