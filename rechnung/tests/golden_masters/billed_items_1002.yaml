@@ -1,0 +1,36 @@
+- description: Another awesome product Oktober 2019
+  invoice: null
+  key: 2019-10
+  price: 23.42
+  quantity: 2
+  subtotal: 46.84
+- description: Something Oktober 2019
+  invoice: null
+  key: 2019-10
+  price: 1.61
+  quantity: 1
+  subtotal: 1.61
+- description: Another awesome product November 2019
+  invoice: null
+  key: 2019-11
+  price: 23.42
+  quantity: 2
+  subtotal: 46.84
+- description: Something November 2019
+  invoice: null
+  key: 2019-11
+  price: 1.61
+  quantity: 1
+  subtotal: 1.61
+- description: Another awesome product Dezember 2019
+  invoice: null
+  key: 2019-12
+  price: 23.42
+  quantity: 2
+  subtotal: 46.84
+- description: Something Dezember 2019
+  invoice: null
+  key: 2019-12
+  price: 1.61
+  quantity: 1
+  subtotal: 1.61
