@@ -1,3 +1,4 @@
+import arrow
 import datetime
 import locale
 import yaml
@@ -22,10 +23,15 @@ def get_contracts(settings, year=None, month=None, cid_only=None, inactive=False
             contract = yaml.safe_load(contract_file)
 
         if year and month:
-            if contract["start"] < datetime.date(year, month, 1):
-                contracts[contract["cid"]] = contract
-            else:
+            requested_date = arrow.get(f"{year}-{month}")
+            if "end" in contract.keys():
+                if arrow.get(contract["end"]) < requested_date:
+                    print(f"Ignoring {contract['cid']} with end {contract['end']}")
+                    continue
+            if arrow.get(contract["start"]) > requested_date:
                 print(f"Ignoring {contract['cid']} with start {contract['start']}")
+                continue
+            contracts[contract["cid"]] = contract
         else:
             contracts[contract["cid"]] = contract
 
@@ -48,19 +54,19 @@ def render_contracts(settings):
             print("Rendering contract pdf for {}".format(contract_data["cid"]))
             contract_data["logo_path"] = logo_path
 
-            for item in contract_data["items"]:
-                for element in ["price", "initial_cost"]:
-                    item[element] = locale.format_string("%.2f", item.get(element, 0))
+            price_total = locale.format_string(
+                "%.2f", sum([item["price"] for item in contract_data["items"]])
+            )
+            initial_total = locale.format_string(
+                "%.2f", sum([item["initial"] for item in contract_data["items"]])
+            )
 
-            if contract_data["start"]:
-                try:
-                    contract_data["start"] = contract_data["start"].strftime(
-                        "%-d. %B %Y"
-                    )
-                except ValueError:
-                    pass
+            if "start" in contract_data.keys():
+                contract_data["start"] = arrow.get(contract_data["start"]).format(
+                    "DD.MM.YYYY", locale=settings.arrow_locale
+                )
 
-            contract_html = template.render(contract=contract_data)
+            contract_html = template.render(**contract_data)
 
             generate_pdf(
                 contract_html, settings.contract_css_asset_file, contract_pdf_filename

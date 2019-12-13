@@ -8,45 +8,6 @@ from shutil import copytree
 from pathlib import Path
 
 
-@pytest.fixture
-def cli_path(tmp_path):
-    """
-    Returnes the click.CommandGroup of cli.py holding all executeable commands,
-    but with the module withe variable "cwd" overwritten to a temporary path. This is
-    required as the current working directory is determined by os.getcwd() on import
-    olf rechnung.cli
-    """
-    cli.cwd = tmp_path
-    return cli.cli1, tmp_path
-
-
-@pytest.fixture(scope="session")
-def initialized_path(tmp_path_factory):
-    """
-    Returns a path where rechnung is initialized in order to verify correct creation
-    of directories and files
-    """
-    tmp_path = tmp_path_factory.getbasetemp() / "rechnung_initialized"
-    tmp_path.mkdir()
-    cli.cwd = tmp_path
-    runner = CliRunner()
-    runner.invoke(cli.cli1, ["init"])
-    return tmp_path
-
-
-@pytest.fixture(scope="session")
-def cli_test_data_path(tmp_path_factory):
-    """
-    Returns a path where rechnung is initialized in order to verify correct creation
-    of directories and files
-    """
-    tmp_path = tmp_path_factory.getbasetemp()
-    cli_path = tmp_path / "rechnung_test_data"
-    copytree(Path("rechnung/tests/fixtures"), cli_path)
-    cli.cwd = cli_path
-    return cli.cli1, cli_path
-
-
 def test_init_exit_code(cli_path):
     """
     Tests if the initialization function returns the correct exit codes.
@@ -170,6 +131,7 @@ def test_invoice_render(cli_test_data_path):
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
     result = runner.invoke(cli1, ["render-all"])
+    print(result.output)
     assert path.joinpath(s.invoices_dir, "1000", "1000.2019.10.pdf").is_file()
     assert not path.joinpath(s.invoices_dir, "1001", "1001.2019.10.pdf").is_file()
     assert path.joinpath(s.invoices_dir, "1002", "1002.2019.10.pdf").is_file()

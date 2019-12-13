@@ -1,6 +1,10 @@
 company: Westnetz and Reudnetz Software
-company_address: "Karl-Heine-Str. 93, 04229 Leipzig"
-company_bank: "Volksbank Leipzig"
+company_address: 
+- "Karl-Heine-Str. 93"
+- "04229 Leipzig"
+company_bank: 
+- "Volksbank Leipzig"
+- DE12 3456 7890 0987 6543 21
 contract_mail_subject: "Your new contract"
 insecure: true
 invoice_mail_subject: "Your new invoice"
