@@ -6,11 +6,16 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Setup locales
+          command: |
+            sudo sed -i -e 's/# de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/' /etc/locale.gen
+            sudo locale-gen
+      - run:
           name: Install Python dependencies in a venv
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            pip install -r requirements-dev.txt
       - run: 
           name: Run tests
           command: |

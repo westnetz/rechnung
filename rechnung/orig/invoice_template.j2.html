@@ -3,31 +3,31 @@
 
 <head>
     <meta charset="utf-8">
-    <link href="invoice.css" media="print" rel="stylesheet">
-    <title>Invoice {{ invoice.id }}</title>
+    <link href="css" media="print" rel="stylesheet">
+    <title>Invoice {{ id }}</title>
     <meta name="description" content="Invoice demo sample">
     <meta name="author" content="Kozea">
 </head>
 
 <body>
-    <img src="file://{{ invoice.logo_path }}" id="logo" width="150" />
+    <img src="file://{{ logo_path }}" id="logo" width="150" />
     <aside>
         <address id="from">
-            {{ invoice.company.address | join("<br />") }}
+            {{ company.address | join("<br />") }}
         </address>
 
         <address id="to">
-            {{ invoice.address | join("<br />") }}
+            {{ address | join("<br />") }}
         </address>
     </aside>
 
     <dl id="informations">
         <dt>Invoice number</dt>
-        <dd>{{ invoice.id }}</dd>
+        <dd>{{ id }}</dd>
         <dt>Date</dt>
-        <dd>{{ invoice.date }}</dd>
+        <dd>{{ date }}</dd>
         <dt>Period</dt>
-        <dd>{{ invoice.period }}</dd>
+        <dd>{{ period }}</dd>
     </dl>
 
     <table>
@@ -38,12 +38,12 @@
             <th>Subtotal</th>
         </thead>
         <tbody>
-            {% for position in positions %}
+            {% for item in items %}
             <tr>
-                <td>{{ position.description }}</td>
-                <td>{{ position.price }}€</td>
-                <td>{{ position.quantity }}</td>
-                <td>{{ position.subtotal }}€</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.price }}€</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.subtotal }}€</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -52,23 +52,23 @@
     <table id="total">
         <thead>
             <th>Account number</th>
-            {% if invoice.vat > 0 %}
+            {% if vat > 0 %}
             <th>Total w/o VAT</th>
-            <th>VAT ({{ invoice.vat }}%)</th>
+            <th>VAT ({{ vat }}%)</th>
             {% endif %}
             <th>Final total</th>
         </thead>
         <tbody>
             <tr>
-                <td>{{ invoice.cid }}</td>
-                {% if invoice.vat > 0 %}
-                <td>{{ invoice.total_net }}€</td>
-                <td>{{ invoice.total_vat }}€</td>
+                <td>{{ cid }}</td>
+                {% if vat > 0 %}
+                <td>{{ total_net }}€</td>
+                <td>{{ total_vat }}€</td>
                 {% endif %}
-                <td>{{ invoice.total_gross }}€</td>
+                <td>{{ total_gross }}€</td>
         </tbody>
     </table>
-    <footer>{{ invoice.company.bank | join(" | ") }}</footer>
+    <footer>{{ company.bank | join(" | ") }}</footer>
 </body>
 
 </html>

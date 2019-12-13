@@ -36,6 +36,38 @@ def init():
 @cli1.command()
 @click.argument("year", type=int)
 @click.argument("month", type=int)
+@click.option("-c", "--cid-only", help="One customer only.")
+@click.option(
+    "-d", "--dry", is_flag=True, default=False, help="Don't write the changes."
+)
+def bill_items(year, month, cid_only, dry):
+    """
+    Bill items for all active contracts (or just one with --cid-only).
+
+    The items will be added to a list, and put into an invoice, the 
+    next time create-invoices is run.
+    """
+    print(f"Billing items for month {month} in {year}.")
+    settings = get_settings_from_cwd(cwd)
+    invoice.bill_items(settings, year, month, cid_only, dry)
+
+
+@cli1.command()
+@click.argument("suffix")
+@click.option("-c", "--cid-only")
+@click.option("-f", "--force-recreate", "force", is_flag=True)
+def create_billed_invoices(suffix, cid_only=None, force=False):
+    """
+    Mass create invoices from billed items.
+    """
+    print("Creating billed invoices...")
+    settings = get_settings_from_cwd(cwd)
+    invoice.create_billed_invoices(settings, suffix, cid_only, force)
+
+
+@cli1.command()
+@click.argument("year", type=int)
+@click.argument("month", type=int)
 @click.option("-c", "--cid-only")
 @click.option("-f", "--force-recreate", "force", is_flag=True)
 def create_invoices(year, month, cid_only=None, force=False):
@@ -124,6 +156,19 @@ def send_invoices(year, month, cid_only=None, force=False):
     print(f"Sending invoices for {year}.{month:02}")
     settings = get_settings_from_cwd(cwd)
     invoice.send_invoices(settings, year, month, cid_only, force)
+
+@cli1.command()
+@click.argument("suffix")
+@click.option("-c", "--cid_only")
+@click.option("-f", "--force-resend", "force", is_flag=True)
+def send_invoices_suffix(suffix, cid_only=None, force=False):
+    """
+    Send invoices by email (selected by suffix instead of year and month).
+    """
+    print(f"Sending invoices for {suffix}")
+    settings = get_settings_from_cwd(cwd)
+    invoice.send_invoices(settings, None, None, cid_only, force, suffix)
+
 
 
 @cli1.command()
