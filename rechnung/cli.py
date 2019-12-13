@@ -3,6 +3,7 @@ import click
 import os
 import rechnung.invoice as invoice
 import rechnung.contract as contract
+import rechnung.payment as payment
 
 from .settings import get_settings_from_cwd, copy_assets, create_required_settings_file
 from .transactions import read_csv_files
@@ -179,6 +180,30 @@ def send_contract(cid):
     print(f"Sending contract {cid}")
     settings = get_settings_from_cwd(cwd)
     contract.send_contract(settings, cid)
+
+
+@cli1.command()
+@click.argument("bank_statement_file", type=click.Path(exists=True))
+def import_bank_statement(bank_statement_file):
+    """
+    Import a bank statement to be annotated with cids
+    and used in reports.
+    """
+    print(f"Importing bank statement {bank_statement_file}...")
+    settings = get_settings_from_cwd(cwd)
+    outfilename = payment.import_bank_statement_from_file(bank_statement_file, settings)
+    print(f"Saved as {outfilename}")
+
+
+@cli1.command()
+@click.argument("cid")
+def report(cid):
+    """
+    Create a report for a customer.
+    """
+    print(f"Reporting customer {cid}...")
+    settings = get_settings_from_cwd(cwd)
+    payment.report_customer(cid, settings)
 
 
 cli = click.CommandCollection(sources=[cli1])

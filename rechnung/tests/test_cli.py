@@ -36,7 +36,7 @@ def test_init_files_directories(initialized_path):
 
 def test_print_stats(cli_test_data_path):
     """
-    Test the print-stats function. 
+    Test the print-stats function.
     It checks if the amount of active contracts and the total income per month is calculated
     correctly.
     """
@@ -56,7 +56,10 @@ def test_print_contracts(cli_test_data_path):
     result = runner.invoke(cli1, ["print-contracts"])
     assert (
         result.output
-        == "1000: Martha Muster 2019-06-01 60.21€\n1001: Murks GmbH, Mike Murks 2030-06-01 13.37€\n1002: Frank Nord 2019-06-01 48.45€\n"
+        == """1000: Martha Muster 2019-06-01 60.21€
+1001: Murks GmbH, Mike Murks 2030-06-01 13.37€
+1002: Frank Nord 2019-06-01 48.45€
+"""
     )
 
 
@@ -69,7 +72,7 @@ def test_invoice_create(cli_test_data_path):
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
-    result = runner.invoke(cli1, ["create-invoices", "2019", "10"])
+    runner.invoke(cli1, ["create-invoices", "2019", "10"])
     invoice_1000_path = path.joinpath(s.invoices_dir, "1000", "1000.2019.10.yaml")
     invoice_1002_path = path.joinpath(s.invoices_dir, "1002", "1002.2019.10.yaml")
     assert invoice_1000_path.is_file()
@@ -94,7 +97,6 @@ def test_invoice_create_force(cli_test_data_path):
     I.e. invoices are not overwritten if the force option is not given.
     """
     cli1, path = cli_test_data_path
-    s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
     result = runner.invoke(cli1, ["create-invoices", "2019", "10"])
     expected_results = [
@@ -112,7 +114,6 @@ def test_invoice_create_force(cli_test_data_path):
 
 def test_invoice_create_cid_only(cli_test_data_path):
     cli1, path = cli_test_data_path
-    s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
     result = runner.invoke(
         cli1, ["create-invoices", "2019", "10", "--cid-only=1000", "--force-recreate"]
@@ -130,8 +131,27 @@ def test_invoice_render(cli_test_data_path):
     cli1, path = cli_test_data_path
     s = settings.get_settings_from_cwd(path)
     runner = CliRunner()
-    result = runner.invoke(cli1, ["render-all"])
-    print(result.output)
+    runner.invoke(cli1, ["render-all"])
     assert path.joinpath(s.invoices_dir, "1000", "1000.2019.10.pdf").is_file()
     assert not path.joinpath(s.invoices_dir, "1001", "1001.2019.10.pdf").is_file()
     assert path.joinpath(s.invoices_dir, "1002", "1002.2019.10.pdf").is_file()
+
+
+def test_postbank_statement_import(cli_test_data_path):
+    cli1, path = cli_test_data_path
+    s = settings.get_settings_from_cwd(path)
+    runner = CliRunner()
+    result = runner.invoke(
+        cli1, ["import-bank-statement", str(path / "bank_statements" / "postbank.csv")]
+    )
+    print(result.output)
+    print(result.exit_code)
+    assert result.exit_code == 0
+    assert result.output.startswith("Importing bank statement")
+    payment_filename = result.output.split("\n")[1].split()[2]
+    with open(payment_filename) as payment_file:
+        payment_data = yaml.load(payment_file, Loader=yaml.FullLoader)
+    with open(s.payments_dir / "postbank.yaml") as payment_master:
+        master_data = yaml.load(payment_master, Loader=yaml.FullLoader)
+    for i, j in zip(payment_data, master_data):
+        assert i == j

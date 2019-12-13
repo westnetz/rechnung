@@ -46,6 +46,9 @@ optional_settings = {
     "invoices_dir": "invoices",
     "logo_asset_file": "logo.svg",
     "policy_attachment_asset_file": "policy.pdf",
+    "bank_statements_dir": "bank_statements",
+    "payments_dir": "payments",
+    "decimal_quantization": ".01",
     "billed_items_dir": "billed_items",
     "arrow_locale": "de",
 }
@@ -94,6 +97,28 @@ def get_settings_from_cwd(
     )
 
 
+def check_required_settings(settings, required_settings):
+    """
+    Check if all required settings are set.
+    """
+    for key in required_settings:
+        if key not in set(settings.keys()):
+            raise RequiredSettingMissingError(
+                f"Setting {key} must be set in settings.yaml!"
+            )
+
+
+def check_unknown_settings(settings, possible_settings):
+    """
+    Check for unknown config options.
+    """
+    for key in list(settings.keys()):
+        if key not in possible_settings:
+            raise UnknownSettingError(
+                f"Setting {key} is unknown, and therefore cannot be configured."
+            )
+
+
 def get_settings_from_file(
     settings_path,
     error_on_unknown=True,
@@ -112,20 +137,9 @@ def get_settings_from_file(
     with open(settings_path) as infile:
         data = yaml.safe_load(infile)
 
-        # Check if all required settings are set in yaml file
-        for key in required_settings:
-            if key not in set(data.keys()):
-                raise RequiredSettingMissingError(
-                    f"Setting {key} must be set in settings.yaml!"
-                )
-
-        # Check for unknown config options
+        check_required_settings(data, required_settings)
         if error_on_unknown:
-            for key in list(data.keys()):
-                if key not in possible_settings:
-                    raise UnknownSettingError(
-                        f"Setting {key} is unknown, and therefore cannot be configured."
-                    )
+            check_unknown_settings(data, possible_settings)
 
         # Build settings dict
         settings_data = deepcopy(optional_settings)
@@ -133,7 +147,6 @@ def get_settings_from_file(
 
         # prepend base_path to all _dir and _file settings
         for s_key, s_value in settings_data.items():
-            # print(s_key, s_value)
             if s_key.endswith(("_file", "_dir")):
                 if s_key.endswith(("_asset_file", "_template_file")):
                     s_value = base_path / settings_data["assets_dir"] / s_value

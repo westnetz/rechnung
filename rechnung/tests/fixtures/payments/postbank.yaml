@@ -1,0 +1,32 @@
+- amount: !!python/object/apply:decimal.Decimal
+  - '60.21'
+  cid: ''
+  date: !!python/object:arrow.arrow.Arrow
+    _datetime: 2019-10-18 00:00:00+00:00
+  receiver: Westnetz w.V.
+  sender: Martha Muster
+  subject: 1000.2019.10
+- amount: !!python/object/apply:decimal.Decimal
+  - '48.45'
+  cid: ''
+  date: !!python/object:arrow.arrow.Arrow
+    _datetime: 2019-10-17 00:00:00+00:00
+  receiver: Westnetz w.V.
+  sender: Klaus Karstens
+  subject: Kunde 1002
+- amount: !!python/object/apply:decimal.Decimal
+  - '96.90'
+  cid: ''
+  date: !!python/object:arrow.arrow.Arrow
+    _datetime: 2019-10-16 00:00:00+00:00
+  receiver: Westnetz w.V.
+  sender: Karina Surcu
+  subject: Frank Nord Internet
+- amount: !!python/object/apply:decimal.Decimal
+  - '60.21'
+  cid: ''
+  date: !!python/object:arrow.arrow.Arrow
+    _datetime: 2019-10-15 00:00:00+00:00
+  receiver: Westnetz w.V.
+  sender: Martha Muster
+  subject: 1000.2019.10

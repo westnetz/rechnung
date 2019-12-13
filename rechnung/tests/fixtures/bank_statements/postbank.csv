@@ -1,0 +1,5 @@
+Buchungsdatum;Wertstellung;Umsatzart;Buchungsdetails;Auftraggeber;Empfänger;Betrag ();Saldo ()
+18.10.2019;18.10.2019;Gutschrift;Referenz NOTPROVIDED1000.2019.10;Martha Muster;Westnetz w.V.;60,21 ;3.381,43 
+17.10.2019;16.10.2019;Gutschrift;Referenz NOTPROVIDEDKunde 1002;Klaus Karstens;Westnetz w.V.;48,45 ;3.321,22 
+16.10.2019;16.10.2019;Dauergutschrift;Referenz NOTPROVIDEDVerwendungszweckFrank Nord Internet;Karina Surcu;Westnetz w.V.;96,9 ;3.272,77 
+15.10.2019;15.10.2019;Gutschrift;Referenz NOTPROVIDED1000.2019.10;Martha Muster;Westnetz w.V.;60,21 ;3.175,87 

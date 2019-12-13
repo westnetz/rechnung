@@ -77,7 +77,7 @@ def send_contract(settings, cid):
     """
     Sends the contract specified with the cid via email to the customer.
 
-    If set, the policy and the product description of the main product 
+    If set, the policy and the product description of the main product
     will be attached.
     """
     mail_template = get_template(settings.contract_mail_template_file)
