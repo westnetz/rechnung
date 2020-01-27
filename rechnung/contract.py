@@ -52,7 +52,7 @@ def render_contracts(settings):
             with open(contract_filename) as yaml_file:
                 contract_data = yaml.safe_load(yaml_file)
             print("Rendering contract pdf for {}".format(contract_data["cid"]))
-            contract_data["logo_path"] = logo_path
+            contract_data.update(settings._asdict())
 
             price_total = locale.format_string(
                 "%.2f", sum([item["price"] for item in contract_data["items"]])
