@@ -361,7 +361,7 @@ def send_invoices(settings, year, month, cid_only, force, suffix=None):
                     continue
 
                 invoice_pdf_filename = (
-                    f"{settings.company} {filename.with_suffix('.pdf').name}"
+                    f"{settings.company_name} {filename.with_suffix('.pdf').name}"
                 )
                 invoice_pdf_path = customer_invoice_dir / filename.with_suffix(".pdf")
                 invoice_mail_text = mail_template.render(invoice=invoice_data)

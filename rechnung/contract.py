@@ -54,10 +54,10 @@ def render_contracts(settings):
             print("Rendering contract pdf for {}".format(contract_data["cid"]))
             contract_data.update(settings._asdict())
 
-            price_total = locale.format_string(
+            contract_data["price_total"] = locale.format_string(
                 "%.2f", sum([item["price"] for item in contract_data["items"]])
             )
-            initial_total = locale.format_string(
+            contract_data["initial_total"] = locale.format_string(
                 "%.2f", sum([item["initial"] for item in contract_data["items"]])
             )
 
@@ -94,7 +94,7 @@ def send_contract(settings, cid):
             print("No email given for contract {cid}")
             quit()
 
-        contract_pdf_filename = f"{settings.company} {contract_yaml_filename.stem}.pdf"
+        contract_pdf_filename = f"{settings.company_name} {contract_yaml_filename.stem}.pdf"
         contract_mail_text = mail_template.render()
 
         attachments = [(contract_pdf_path, contract_pdf_filename)]

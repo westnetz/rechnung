@@ -19,7 +19,7 @@ od = pd / ORIG_DIR
 # programm which can be overwritten by the user if set
 # in the settings.yaml
 required_settings = [
-    "company",
+    "company_name",
     "company_address",
     "company_bank",
     "contract_mail_subject",
