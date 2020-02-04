@@ -23,7 +23,7 @@ def get_contracts(settings, year=None, month=None, cid_only=None, inactive=False
             contract = yaml.safe_load(contract_file)
 
         if year and month:
-            requested_date = arrow.get(f"{year}-{month}")
+            requested_date = arrow.get(f"{year}-{month:02}")
             if "end" in contract.keys():
                 if arrow.get(contract["end"]) < requested_date:
                     print(f"Ignoring {contract['cid']} with end {contract['end']}")

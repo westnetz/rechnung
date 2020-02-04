@@ -291,7 +291,7 @@ def bill_cid_items(settings, contract, year, month):
     """
     Creates billed items for the given month and year. 
     """
-    billed_item_key = f"{year}-{month}"
+    billed_item_key = f"{year}-{month:02}"
     month_name = arrow.get(billed_item_key).format("MMMM", locale=settings.arrow_locale)
     billed_items = get_billed_items(settings, contract["cid"])
     if any(item["key"] == billed_item_key for item in billed_items):
