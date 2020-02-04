@@ -202,9 +202,9 @@ def generate_billed_invoice(settings, contract, suffix):
                     "subtotal": billed_item["subtotal"],
                 }
             )
-        item_keys.append(billed_item["key"])
-        billed_item["invoice"] = invoice_id
-        gross += billed_item["subtotal"]
+            item_keys.append(billed_item["key"])
+            billed_item["invoice"] = invoice_id
+            gross += billed_item["subtotal"]
 
     gross = round(gross, 2)
     net = round(gross / (1.0 + settings.vat / 100.0), 2)

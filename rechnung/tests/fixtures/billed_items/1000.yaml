@@ -1,0 +1,12 @@
+- description: A great product September 2019
+  invoice: 1000.2019.Q3
+  key: 2019-9
+  price: 13.37
+  quantity: 1
+  subtotal: 13.37
+- description: Another awesome product September 2019
+  invoice: 1000.2019.Q3
+  key: 2019-9
+  price: 23.42
+  quantity: 2
+  subtotal: 46.84
