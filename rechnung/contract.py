@@ -108,14 +108,14 @@ def send_contract(settings, cid):
                 print(f"Item file {item_pdf_file} not found")
 
         if settings.policy_attachment_asset_file:
-            policy_pdf_file = settings.policy_attachment_asset_file
-            policy_pdf_path = settings.assets_dir / policy_pdf_file
+            policy_pdf_path = settings.policy_attachment_asset_file
             if policy_pdf_path.is_file():
-                attachments.append((policy_pdf_path, policy_pdf_file))
+                attachments.append((policy_pdf_path, policy_pdf_path.name))
             else:
                 print(f"Missing {settings.policy_attachment_asset_file.name}")
 
         contract_email = generate_email(
+            settings,
             contract_data["email"],
             settings.contract_mail_subject,
             contract_mail_text,
