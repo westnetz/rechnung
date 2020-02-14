@@ -4,6 +4,7 @@ import yaml
 
 from email.header import Header
 from email.message import EmailMessage
+from email.utils import formatdate
 import mimetypes
 from jinja2 import Template
 from weasyprint import HTML, CSS
@@ -66,6 +67,7 @@ def generate_email(
     msg["To"] = Header(mail_to, "utf-8")
     msg["Subject"] = mail_subject
     msg["From"] = settings.sender
+    msg["Date"] = formatdate(localtime=True)
 
     msg.set_content(mail_text)
 

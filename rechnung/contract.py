@@ -23,7 +23,7 @@ def get_contracts(settings, year=None, month=None, cid_only=None, inactive=False
             contract = yaml.safe_load(contract_file)
 
         if year and month:
-            requested_date = arrow.get(f"{year}-{month}")
+            requested_date = arrow.get(f"{year}-{month:02}")
             if "end" in contract.keys():
                 if arrow.get(contract["end"]) < requested_date:
                     print(f"Ignoring {contract['cid']} with end {contract['end']}")
@@ -52,12 +52,12 @@ def render_contracts(settings):
             with open(contract_filename) as yaml_file:
                 contract_data = yaml.safe_load(yaml_file)
             print("Rendering contract pdf for {}".format(contract_data["cid"]))
-            contract_data["logo_path"] = logo_path
+            contract_data.update(settings._asdict())
 
-            price_total = locale.format_string(
+            contract_data["price_total"] = locale.format_string(
                 "%.2f", sum([item["price"] for item in contract_data["items"]])
             )
-            initial_total = locale.format_string(
+            contract_data["initial_total"] = locale.format_string(
                 "%.2f", sum([item["initial"] for item in contract_data["items"]])
             )
 
@@ -94,7 +94,7 @@ def send_contract(settings, cid):
             print("No email given for contract {cid}")
             quit()
 
-        contract_pdf_filename = f"{settings.company} {contract_yaml_filename.stem}.pdf"
+        contract_pdf_filename = f"{settings.company_name} {contract_yaml_filename.stem}.pdf"
         contract_mail_text = mail_template.render()
 
         attachments = [(contract_pdf_path, contract_pdf_filename)]
@@ -108,14 +108,14 @@ def send_contract(settings, cid):
                 print(f"Item file {item_pdf_file} not found")
 
         if settings.policy_attachment_asset_file:
-            policy_pdf_file = settings.policy_attachment_asset_file
-            policy_pdf_path = settings.assets_dir / policy_pdf_file
+            policy_pdf_path = settings.policy_attachment_asset_file
             if policy_pdf_path.is_file():
-                attachments.append((policy_pdf_path, policy_pdf_file))
+                attachments.append((policy_pdf_path, policy_pdf_path.name))
             else:
                 print(f"Missing {settings.policy_attachment_asset_file.name}")
 
         contract_email = generate_email(
+            settings,
             contract_data["email"],
             settings.contract_mail_subject,
             contract_mail_text,

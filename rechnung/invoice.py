@@ -202,9 +202,9 @@ def generate_billed_invoice(settings, contract, suffix):
                     "subtotal": billed_item["subtotal"],
                 }
             )
-        item_keys.append(billed_item["key"])
-        billed_item["invoice"] = invoice_id
-        gross += billed_item["subtotal"]
+            item_keys.append(billed_item["key"])
+            billed_item["invoice"] = invoice_id
+            gross += billed_item["subtotal"]
 
     gross = round(gross, 2)
     net = round(gross / (1.0 + settings.vat / 100.0), 2)
@@ -291,7 +291,7 @@ def bill_cid_items(settings, contract, year, month):
     """
     Creates billed items for the given month and year. 
     """
-    billed_item_key = f"{year}-{month}"
+    billed_item_key = f"{year}-{month:02}"
     month_name = arrow.get(billed_item_key).format("MMMM", locale=settings.arrow_locale)
     billed_items = get_billed_items(settings, contract["cid"])
     if any(item["key"] == billed_item_key for item in billed_items):
@@ -361,7 +361,7 @@ def send_invoices(settings, year, month, cid_only, force, suffix=None):
                     continue
 
                 invoice_pdf_filename = (
-                    f"{settings.company} {filename.with_suffix('.pdf').name}"
+                    f"{settings.company_name} {filename.with_suffix('.pdf').name}"
                 )
                 invoice_pdf_path = customer_invoice_dir / filename.with_suffix(".pdf")
                 invoice_mail_text = mail_template.render(invoice=invoice_data)

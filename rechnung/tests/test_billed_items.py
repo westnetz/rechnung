@@ -43,11 +43,12 @@ def test_billed_invoice_without_billed_items(cli_billed_tests_data_path):
     ]
     for e_r in expected_results:
         assert e_r in result.output
-    
+
     billed_items_1000_path = path.joinpath(s.billed_items_dir, "1000.yaml")
     billed_items_1001_path = path.joinpath(s.billed_items_dir, "1001.yaml")
     billed_items_1002_path = path.joinpath(s.billed_items_dir, "1002.yaml")
-    assert not billed_items_1000_path.is_file()
+    # 1000 has billed and invoiced items!
+    assert billed_items_1000_path.is_file()
     assert not billed_items_1001_path.is_file()
     assert not billed_items_1002_path.is_file()
 
@@ -125,7 +126,7 @@ def test_create_single_billed_invoice(cli_billed_tests_data_path):
         assert e_r in result.output
     for u_r in unexpected_results:
         assert u_r not in result.output
-   
+
     # Check if only the expected files exist
     invoice_1000_path = path.joinpath(s.invoices_dir, "1000", "1000.2019.Q4.yaml")
     invoice_1001_path = path.joinpath(s.invoices_dir, "1001", "1001.2019.Q4.yaml")
@@ -147,6 +148,8 @@ def test_create_single_billed_invoice(cli_billed_tests_data_path):
     with open(billed_items_1000_path) as infile:
         billed_items_1000 = yaml.safe_load(infile)
         for billed_item in billed_items_1000:
+            if 'September' in billed_item['description']:
+                continue
             assert billed_item['invoice'] == '1000.2019.Q4'
 
 
@@ -165,13 +168,13 @@ def test_create_billed_invoices(cli_billed_tests_data_path):
     unexpected_results = [
         "No unbilled items found for 1002"
     ]
-    
+
     # Check for correct output of the command
     for e_r in expected_results:
         assert e_r in result.output
     for u_r in unexpected_results:
         assert u_r not in result.output
-   
+
     # Check if only the expected files exist
     invoice_1000_path = path.joinpath(s.invoices_dir, "1000", "1000.2019.Q4.yaml")
     invoice_1001_path = path.joinpath(s.invoices_dir, "1001", "1001.2019.Q4.yaml")

@@ -1,74 +1,80 @@
-<!doctype html>
 <html>
 
-<head>
-    <meta charset="utf-8">
-    <link href="css" media="print" rel="stylesheet">
-    <title>Invoice {{ id }}</title>
-    <meta name="description" content="Invoice demo sample">
-    <meta name="author" content="Kozea">
-</head>
+    <head>
+        <title>
+            Rechnung {{ id }}
+        </title>
+    </head>
 
-<body>
-    <img src="file://{{ logo_path }}" id="logo" width="150" />
-    <aside>
-        <address id="from">
-            {{ company.address | join("<br />") }}
-        </address>
+    <body>
+      <h1>Rechnung</h1>
+      
+      <p id="fromaddress">
+        <u>westnetz w.V., Karl-Heine-Str. 93, 04229 Leipzig</u>
+      </p>
+      <p id="toaddress">
+      {{ address | join("<br />") }}
+      </p>
 
-        <address id="to">
-            {{ address | join("<br />") }}
-        </address>
-    </aside>
 
-    <dl id="informations">
-        <dt>Invoice number</dt>
-        <dd>{{ id }}</dd>
-        <dt>Date</dt>
-        <dd>{{ date }}</dd>
-        <dt>Period</dt>
-        <dd>{{ period }}</dd>
-    </dl>
-
-    <table>
-        <thead>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Subtotal</th>
-        </thead>
-        <tbody>
-            {% for item in items %}
+	<table class="infoheader">
             <tr>
-                <td>{{ item.description }}</td>
-                <td>{{ item.price }}€</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ item.subtotal }}€</td>
+                <th>Rechnungsnummer</th>
+                <th>Leistungszeitraum</th>
+                <th>Rechnungsdatum</th>
             </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <table id="total">
-        <thead>
-            <th>Account number</th>
-            {% if vat > 0 %}
-            <th>Total w/o VAT</th>
-            <th>VAT ({{ vat }}%)</th>
-            {% endif %}
-            <th>Final total</th>
-        </thead>
-        <tbody>
             <tr>
-                <td>{{ cid }}</td>
-                {% if vat > 0 %}
-                <td>{{ total_net }}€</td>
-                <td>{{ total_vat }}€</td>
-                {% endif %}
-                <td>{{ total_gross }}€</td>
-        </tbody>
-    </table>
-    <footer>{{ company.bank | join(" | ") }}</footer>
-</body>
+		<td class="info">{{ id }}</td>
+		<td class="info">{{ period }}</td>
+		<td class="info">{{ date }}</td>
+            </tr>
+        </table>
 
+
+	<h2>Rechnungspositionen</h2>
+	<table class="positions">
+            <tr>
+                <th id="tablepos">Pos.</th>
+                <th id="tabledesc">Beschreibung</th>
+                <th id="tablesingle">Einzelpreis</th>
+                <th id="tablequantity">Anzahl</th>
+                <th id="tabletotal">Gesamtpreis</th>
+            </tr>
+	    {% for item in items %}
+            <tr class="position">
+		<td class="positions">{{ item.item }}</td>
+		<td class="positions">{{ item.description }}</td>
+		<td class="positions">{{ item.price }}</td>
+		<td class="positions">{{ item.quantity }}</td>
+		<td class="positions">{{ item.subtotal }}</td>
+            </tr>
+	    {% endfor %}
+        </table>
+       
+	<table class="positions sum">
+            <tr>
+                <th>Nettobetrag</th>
+                <th>Mehrwertsteuer (19%)</th>
+                <th>Rechnungsbetrag</th>
+            </tr>
+            <tr>
+		<td class="total">{{ total_net }}</td>
+		<td class="total">{{ total_vat }}</td>
+		<td class="total strong">{{ total_gross }}</td>
+            </tr>
+        </table>
+
+
+	<h2>Hinweise</h2>
+        <p>
+	Alle Preise verstehen sich in Euro und sind innerhalb von 14 Tagen auf das nebenstehend angegebene Konto zu überweisen. Um eine möglichst fehlerfreie Verbuchung ihrer Einzahlungen vornehmen zu können, bitten wir um die Angabe der Rechnungsnummer {{ id }} im Verwendungszeck. Bei Daueraufträgen benötigen wir zumindest ihre Kundennummer {{ cid }}.
+        </p>
+
+        <p>
+        Diese Rechnung wurde maschinell erstellt und ist auch ohne Unterschrift gültig.
+        </p>
+      
+	<embed src="file:///{{ logo_asset_file }}" id="logo" />
+
+    </body>
 </html>
