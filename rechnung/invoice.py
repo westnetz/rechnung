@@ -147,23 +147,6 @@ def create_invoices(settings, year, month, cid_only=None, force=False):
         save_invoice_yaml(settings, invoice_data, force)
 
 
-def save_invoice_yaml(settings, invoice_data, force=False):
-    """
-    Saves the invoice_data to a yaml file in settings.invoices_dir.
-    """
-    invoice_contract_dir = settings.invoices_dir / invoice_data["cid"]
-
-    if not invoice_contract_dir.is_dir():
-        invoice_contract_dir.mkdir()
-
-    invoice_path = invoice_contract_dir / f"{invoice_data['id']}.yaml"
-    if not invoice_path.is_file() or force:
-        with open(invoice_path, "w") as invoice_fp:
-            invoice_fp.write(yaml.dump(invoice_data, default_flow_style=False))
-    else:
-        print(f"Invoice {invoice_path} already exists.")
-
-
 class NoUnbilledItemsFound(Exception):
     pass
 
