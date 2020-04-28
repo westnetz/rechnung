@@ -114,7 +114,7 @@ def generate_yaml(object, filename):
         filename: Filename of the yaml file.
     """
     with open(filename, "w") as outfile:
-        yaml.dump(object, outfile, default_flow_style=False)
+        yaml.dump(object, outfile, default_flow_style=False, allow_unicode=True)
 
 
 def read_with_default(prompt, default=None):

@@ -88,8 +88,7 @@ def render_invoices(settings):
     for contract_invoice_dir, filename in iterate_invoices(settings):
         invoice_pdf_filename = filename.with_suffix(".pdf")
         if not invoice_pdf_filename.is_file():
-            with open(filename) as yaml_file:
-                invoice_data = yaml.safe_load(yaml_file.read())
+            invoice_data = yaml.safe_load(filename.read_text("utf-8"))
             invoice_data.update(settings._asdict())
 
             print(f"Rendering invoice pdf for {invoice_data['id']}")
@@ -123,8 +122,10 @@ def save_invoice_yaml(settings, invoice_data, force=False):
 
     invoice_path = invoice_contract_dir / f"{invoice_data['id']}.yaml"
     if not invoice_path.is_file() or force:
-        with open(invoice_path, "w") as invoice_fp:
-            invoice_fp.write(yaml.dump(invoice_data, default_flow_style=False))
+        with open(invoice_path, "w", encoding="utf-8") as invoice_fp:
+            invoice_fp.write(
+                yaml.dump(invoice_data, default_flow_style=False, allow_unicode=True)
+            )
     else:
         print(f"Invoice {invoice_path} already exists.")
 
@@ -268,8 +269,8 @@ def save_billed_items_yaml(settings, billed_items, cid):
     Saves the billed items to the billed items file of the customer 
     """
     billed_items_path = settings.billed_items_dir / f"{cid}.yaml"
-    with open(billed_items_path, "w") as outfile:
-        yaml.dump(billed_items, outfile)
+    with open(billed_items_path, "w", encoding="utf-8") as outfile:
+        yaml.dump(billed_items, outfile, allow_unicode=True)
 
 
 def get_billed_items(settings, cid):
@@ -283,8 +284,7 @@ def get_billed_items(settings, cid):
     if not billed_items_path.is_file():
         return []
     else:
-        with open(billed_items_path) as infile:
-            return yaml.safe_load(infile)
+        return yaml.safe_load(billed_items_path.read_text("utf-8"))
 
 
 def bill_cid_items(settings, contract, year, month):
@@ -352,8 +352,9 @@ def send_invoices(settings, year, month, cid_only, force, suffix=None):
                 elif not filename.name.endswith(f"{year}.{month:02}.yaml"):
                     continue
 
-                with open(customer_invoice_dir / filename) as yaml_file:
-                    invoice_data = yaml.safe_load(yaml_file)
+                invoice_data = yaml.safe_load(
+                    (customer_invoice_dir / filename).read_text("utf-8")
+                )
 
                 # don't send invoices multiple times
                 if invoice_data.get("sent") and not force:
@@ -383,6 +384,9 @@ def send_invoices(settings, year, month, cid_only, force, suffix=None):
                     settings.password,
                     settings.insecure,
                 ):
-                    with open(customer_invoice_dir / filename, "w") as yaml_file:
+                    with open(
+                        customer_invoice_dir / filename, "w", encoding="utf-8"
+                    ) as yaml_file:
                         invoice_data["sent"] = True
-                        yaml_file.write(yaml.dump(invoice_data))
+                        yaml_file.write(yaml.dump(invoice_data, allow_unicode=True))
+
