@@ -23,6 +23,9 @@ def get_contracts(settings, year=None, month=None, cid_only=None, inactive=False
             (settings.contracts_dir / filename).read_text("utf-8")
         )
 
+        if not contract.get("active", False):
+            continue
+
         if year and month:
             requested_date = arrow.get(f"{year}-{month:02}")
             if "end" in contract.keys():
