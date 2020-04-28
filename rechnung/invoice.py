@@ -95,12 +95,12 @@ def render_invoices(settings):
 
             # Format data for printing
             for element in ["total_net", "total_gross", "total_vat"]:
-                invoice_data[element] = locale.format_string(
-                    "%.2f", invoice_data[element]
+                invoice_data[element] = locale.currency(
+                    invoice_data[element], symbol=True, grouping=True
                 )
             for item in invoice_data["items"]:
                 for key in ["price", "subtotal"]:
-                    item[key] = locale.format_string("%.2f", item[key])
+                    item[key] = locale.currency(item[key], symbol=True, grouping=True)
 
             invoice_html = template.render(**invoice_data)
 
