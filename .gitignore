@@ -1,12 +1,12 @@
 *.egg-info/*
 .coverage
 __pycache__
+assets/
 bin/
+contracts/
+docs/_build/
+invoices/
 lib*
 pyvenv.cfg
+settings.yaml
 share/
-./assets/
-./contracts/
-./invoices/
-./settings.yaml
-docs/_build/

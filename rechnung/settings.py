@@ -78,8 +78,8 @@ def create_required_settings_file(cwd, settings_file=SETTINGS_FILE):
     settings_path = Path(cwd) / settings_file
     if settings_path.exists():
         raise FileExistsError("Settings file already exists.")
-    with open(settings_path, "w") as s_file:
-        yaml.dump(dict.fromkeys(required_settings), s_file)
+    with open(settings_path, "w", encoding="utf-8") as s_file:
+        yaml.dump(dict.fromkeys(required_settings), s_file, allow_unicode=True)
     return settings_path
 
 
@@ -109,44 +109,43 @@ def get_settings_from_file(
     ending with "_file" or "_dir".
     """
     base_path = settings_path.parent.resolve()
-    with open(settings_path) as infile:
-        data = yaml.safe_load(infile)
+    data = yaml.safe_load(settings_path.read_text("utf-8"))
 
-        # Check if all required settings are set in yaml file
-        for key in required_settings:
-            if key not in set(data.keys()):
-                raise RequiredSettingMissingError(
-                    f"Setting {key} must be set in settings.yaml!"
+    # Check if all required settings are set in yaml file
+    for key in required_settings:
+        if key not in set(data.keys()):
+            raise RequiredSettingMissingError(
+                f"Setting {key} must be set in settings.yaml!"
+            )
+
+    # Check for unknown config options
+    if error_on_unknown:
+        for key in list(data.keys()):
+            if key not in possible_settings:
+                raise UnknownSettingError(
+                    f"Setting {key} is unknown, and therefore cannot be configured."
                 )
 
-        # Check for unknown config options
-        if error_on_unknown:
-            for key in list(data.keys()):
-                if key not in possible_settings:
-                    raise UnknownSettingError(
-                        f"Setting {key} is unknown, and therefore cannot be configured."
-                    )
+    # Build settings dict
+    settings_data = deepcopy(optional_settings)
+    settings_data.update(data)
 
-        # Build settings dict
-        settings_data = deepcopy(optional_settings)
-        settings_data.update(data)
+    # prepend base_path to all _dir and _file settings
+    for s_key, s_value in settings_data.items():
+        # print(s_key, s_value)
+        if s_key.endswith(("_file", "_dir")):
+            if s_key.endswith(("_asset_file", "_template_file")):
+                s_value = base_path / settings_data["assets_dir"] / s_value
+            else:
+                s_value = base_path.joinpath(s_value)
+            settings_data[s_key] = s_value
+            if create_non_existing_dirs and s_key.endswith("_dir"):
+                if not s_value.is_dir():
+                    s_value.mkdir()
 
-        # prepend base_path to all _dir and _file settings
-        for s_key, s_value in settings_data.items():
-            # print(s_key, s_value)
-            if s_key.endswith(("_file", "_dir")):
-                if s_key.endswith(("_asset_file", "_template_file")):
-                    s_value = base_path / settings_data["assets_dir"] / s_value
-                else:
-                    s_value = base_path.joinpath(s_value)
-                settings_data[s_key] = s_value
-                if create_non_existing_dirs and s_key.endswith("_dir"):
-                    if not s_value.is_dir():
-                        s_value.mkdir()
+    locale.setlocale(locale.LC_ALL, settings_data["locale"])
 
-        locale.setlocale(locale.LC_ALL, settings_data["locale"])
-
-        return Settings(**settings_data)
+    return Settings(**settings_data)
 
 
 def copy_assets(target_dir, orig_dir=od):

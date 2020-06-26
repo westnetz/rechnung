@@ -1,6 +1,7 @@
 import smtplib
 import ssl
 import yaml
+from pathlib import Path
 
 from email.header import Header
 from email.message import EmailMessage
@@ -23,8 +24,7 @@ def get_template(template_filename):
         Template: jinja2 Template instance.
     """
 
-    with open(template_filename) as template_file:
-        return Template(template_file.read())
+    return Template(Path(template_filename).read_text("utf-8"))
 
 
 def send_email(msg, server, username, password, insecure=True):
@@ -65,6 +65,7 @@ def generate_email(
     """
     msg = EmailMessage()
     msg["To"] = Header(mail_to, "utf-8")
+    msg["Bcc"] = Header(settings.sender, "utf-8")
     msg["Subject"] = mail_subject
     msg["From"] = settings.sender
     msg["Date"] = formatdate(localtime=True)
@@ -113,7 +114,7 @@ def generate_yaml(object, filename):
         filename: Filename of the yaml file.
     """
     with open(filename, "w") as outfile:
-        yaml.dump(object, outfile, default_flow_style=False)
+        yaml.dump(object, outfile, default_flow_style=False, allow_unicode=True)
 
 
 def read_with_default(prompt, default=None):

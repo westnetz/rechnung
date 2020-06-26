@@ -94,7 +94,7 @@ def print_contracts():
         total_monthly = sum(
             map(lambda i: i.get("quantity", 1) * i["price"], data["items"])
         )
-        print(f"{cid}: {company_name} {data['start']} {total_monthly}€")
+        print(f"{cid}: {company_name} {data['email']} {data['start']} {total_monthly}€")
 
 
 @cli1.command()
@@ -139,8 +139,8 @@ def render_all():
     """
     print("Rendering invoices and contracts...")
     settings = get_settings_from_cwd(cwd)
-    invoice.render_invoices(settings)
     contract.render_contracts(settings)
+    invoice.render_invoices(settings)
 
 
 @cli1.command()
@@ -156,6 +156,7 @@ def send_invoices(year, month, cid_only=None, force=False):
     settings = get_settings_from_cwd(cwd)
     invoice.send_invoices(settings, year, month, cid_only, force)
 
+
 @cli1.command()
 @click.argument("suffix")
 @click.option("-c", "--cid_only")
@@ -167,7 +168,6 @@ def send_invoices_suffix(suffix, cid_only=None, force=False):
     print(f"Sending invoices for {suffix}")
     settings = get_settings_from_cwd(cwd)
     invoice.send_invoices(settings, None, None, cid_only, force, suffix)
-
 
 
 @cli1.command()
