@@ -312,7 +312,7 @@ def bill_items(settings, year, month, cid_only=None, dry=False):
 def send_invoices(settings, year, month, cid_only, force, suffix=None):
     """
     Sends emails with the invoices as attachment.
-    
+
     For backwards compatibility: year and month are ignored, if suffix is given!
     """
     mail_template = get_template(settings.invoice_mail_template_file)
@@ -321,10 +321,11 @@ def send_invoices(settings, year, month, cid_only, force, suffix=None):
         print("Force resend enabled")
 
     for d in settings.invoices_dir.iterdir():
-        if cid_only and cid_only != d.name:
-            continue
-        else:
-            print(f"Only sending to {cid_only}")
+        if cid_only:
+            if cid_only != d.name:
+                continue
+            else:
+                print(f"Only sending to {cid_only}")
 
         customer_invoice_dir = settings.invoices_dir / d
         if customer_invoice_dir.iterdir():
@@ -372,4 +373,3 @@ def send_invoices(settings, year, month, cid_only, force, suffix=None):
                     ) as yaml_file:
                         invoice_data["sent"] = True
                         yaml_file.write(yaml.dump(invoice_data, allow_unicode=True))
-
