@@ -10,7 +10,7 @@ atomicwrites==1.4.0       # via pytest
 attrs==19.3.0             # via black, pytest
 black==19.3b0             # via -r requirements-dev.in
 cairocffi==1.1.0          # via -r requirements.txt, cairosvg, weasyprint
-cairosvg==2.4.2           # via -r requirements.txt, weasyprint
+cairosvg==2.5.1           # via -r requirements.txt, weasyprint
 cffi==1.14.0              # via -r requirements.txt, cairocffi, weasyprint
 click==7.0                # via -r requirements.txt, black, pip-tools
 coverage==5.1             # via pytest-cov
