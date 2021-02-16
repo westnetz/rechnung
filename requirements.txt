@@ -6,7 +6,7 @@
 #
 arrow==0.13.1             # via -r requirements.in
 cairocffi==1.1.0          # via cairosvg, weasyprint
-cairosvg==2.4.2           # via weasyprint
+cairosvg==2.5.1           # via weasyprint
 cffi==1.14.0              # via cairocffi, weasyprint
 click==7.0                # via -r requirements.in
 cssselect2==0.3.0         # via cairosvg, weasyprint
