@@ -4,40 +4,119 @@
 #
 #    make update-requirements
 #
-appdirs==1.4.3            # via black
-arrow==0.13.1             # via -r requirements.txt
-atomicwrites==1.4.0       # via pytest
-attrs==19.3.0             # via black, pytest
-black==19.3b0             # via -r requirements-dev.in
-cairocffi==1.1.0          # via -r requirements.txt, cairosvg, weasyprint
-cairosvg==2.5.1           # via -r requirements.txt, weasyprint
-cffi==1.14.0              # via -r requirements.txt, cairocffi, weasyprint
-click==7.0                # via -r requirements.txt, black, pip-tools
-coverage==5.1             # via pytest-cov
-cssselect2==0.3.0         # via -r requirements.txt, cairosvg, weasyprint
-defusedxml==0.6.0         # via -r requirements.txt, cairosvg
-html5lib==1.0.1           # via -r requirements.txt, weasyprint
-jinja2==2.10.3            # via -r requirements.txt
-markupsafe==1.1.1         # via -r requirements.txt, jinja2
-more-itertools==8.2.0     # via pytest
-packaging==20.3           # via pytest
-pillow==7.1.2             # via -r requirements.txt, cairosvg
-pip-tools==5.1.1          # via -r requirements-dev.in
-pluggy==0.13.1            # via pytest
-py==1.8.1                 # via pytest
-pycparser==2.20           # via -r requirements.txt, cffi
-pyparsing==2.4.7          # via packaging
-pyphen==0.9.5             # via -r requirements.txt, weasyprint
-pytest-cov==2.8.1         # via -r requirements-dev.in
-pytest==5.2.1             # via -r requirements-dev.in, pytest-cov
-python-dateutil==2.8.1    # via -r requirements.txt, arrow
-pyyaml==5.1               # via -r requirements.txt
-six==1.14.0               # via -r requirements.txt, html5lib, packaging, pip-tools, python-dateutil
-tinycss2==1.0.2           # via -r requirements.txt, cairosvg, cssselect2, weasyprint
-toml==0.10.0              # via black
-wcwidth==0.1.9            # via pytest
-weasyprint==47            # via -r requirements.txt
-webencodings==0.5.1       # via -r requirements.txt, cssselect2, html5lib, tinycss2
+appdirs==1.4.3
+    # via black
+arrow==0.13.1
+    # via -r requirements.txt
+atomicwrites==1.4.0
+    # via pytest
+attrs==19.3.0
+    # via
+    #   black
+    #   pytest
+black==19.3b0
+    # via -r requirements-dev.in
+cairocffi==1.1.0
+    # via
+    #   -r requirements.txt
+    #   cairosvg
+    #   weasyprint
+cairosvg==2.5.1
+    # via
+    #   -r requirements.txt
+    #   weasyprint
+cffi==1.14.0
+    # via
+    #   -r requirements.txt
+    #   cairocffi
+    #   weasyprint
+click==7.0
+    # via
+    #   -r requirements.txt
+    #   black
+    #   pip-tools
+coverage==5.1
+    # via pytest-cov
+cssselect2==0.3.0
+    # via
+    #   -r requirements.txt
+    #   cairosvg
+    #   weasyprint
+defusedxml==0.6.0
+    # via
+    #   -r requirements.txt
+    #   cairosvg
+html5lib==1.0.1
+    # via
+    #   -r requirements.txt
+    #   weasyprint
+jinja2==2.10.3
+    # via -r requirements.txt
+markupsafe==1.1.1
+    # via
+    #   -r requirements.txt
+    #   jinja2
+more-itertools==8.2.0
+    # via pytest
+packaging==20.3
+    # via pytest
+pillow==8.2.0
+    # via
+    #   -r requirements.txt
+    #   cairosvg
+pip-tools==5.1.1
+    # via -r requirements-dev.in
+pluggy==0.13.1
+    # via pytest
+py==1.8.1
+    # via pytest
+pycparser==2.20
+    # via
+    #   -r requirements.txt
+    #   cffi
+pyparsing==2.4.7
+    # via packaging
+pyphen==0.9.5
+    # via
+    #   -r requirements.txt
+    #   weasyprint
+pytest-cov==2.8.1
+    # via -r requirements-dev.in
+pytest==5.2.1
+    # via
+    #   -r requirements-dev.in
+    #   pytest-cov
+python-dateutil==2.8.1
+    # via
+    #   -r requirements.txt
+    #   arrow
+pyyaml==5.1
+    # via -r requirements.txt
+six==1.14.0
+    # via
+    #   -r requirements.txt
+    #   html5lib
+    #   packaging
+    #   pip-tools
+    #   python-dateutil
+tinycss2==1.0.2
+    # via
+    #   -r requirements.txt
+    #   cairosvg
+    #   cssselect2
+    #   weasyprint
+toml==0.10.0
+    # via black
+wcwidth==0.1.9
+    # via pytest
+weasyprint==47
+    # via -r requirements.txt
+webencodings==0.5.1
+    # via
+    #   -r requirements.txt
+    #   cssselect2
+    #   html5lib
+    #   tinycss2
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
