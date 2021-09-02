@@ -8,7 +8,7 @@ from email.utils import formatdate
 import mimetypes
 from jinja2 import Template
 from weasyprint import HTML, CSS
-from weasyprint.fonts import FontConfiguration
+from weasyprint.text.fonts import FontConfiguration
 
 
 def get_template(template_filename):

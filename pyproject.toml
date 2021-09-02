@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "rechnung"
+version = "0.1.0"
+description = "File based contract and invoice management system."
+authors = ["Florian Rämisch <olf@subsignal.org>"]
+license = "GPL-3.0"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+arrow = "^1.1.1"
+click = "^8.0.1"
+Jinja2 = "^3.0.1"
+PyYAML = "^5.4.1"
+weasyprint = "^53.2"
+marshmallow = "^3.13.0"
+
+[tool.poetry.dev-dependencies]
+black = "^21.8b0"
+pytest = "^6.2.5"
+coverage = "^5.5"
+pytest-cov = "^2.12.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
