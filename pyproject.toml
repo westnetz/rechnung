@@ -5,6 +5,9 @@ description = "File based contract and invoice management system."
 authors = ["Florian Rämisch <olf@subsignal.org>"]
 license = "GPL-3.0"
 
+[tool.poetry.scripts]
+rechnung = "rechnung.cli:cli"
+
 [tool.poetry.dependencies]
 python = "^3.9"
 arrow = "^1.1.1"
@@ -13,6 +16,7 @@ Jinja2 = "^3.0.1"
 PyYAML = "^5.4.1"
 weasyprint = "^53.2"
 marshmallow = "^3.13.0"
+attrs = "^21.2.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.8b0"
